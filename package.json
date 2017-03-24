@@ -1,0 +1,22 @@
+{
+  "name": "kittis",
+  "version": "1.0.0",
+  "description": "pixi game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config ./www/webpack/webpack.config.js --progress",
+    "dev": "webpack-dev-server --config ./www/webpack/webpack.config.js"
+  },
+  "author": "lev",
+  "license": "ISC",
+  "dependencies": {
+    "file-loader": "^0.10.1",
+    "json-loader": "^0.5.4",
+    "pixi.js": "^4.4.3",
+    "webpack": "^2.3.1"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^2.4.2"
+  }
+}
