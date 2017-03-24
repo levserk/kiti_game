@@ -5,7 +5,12 @@ const PixiApp = () => {
     configure();
     let app = createApp();
 
-    console.log(app.screen);
+    let info = createInfo();
+    info.x = 10;
+    info.y = 10;
+    app.stage.addChild(info);
+    info.text = `width: ${app.screen.width}, height: ${app.screen.height}`;
+
 };
 
 const createApp = () => {
@@ -25,7 +30,8 @@ const configure = () => {
 const createInfo = () => {
     let style = new PIXI.TextStyle({
         fontSize: 12
-    })
+    });
+   return new PIXI.Text(``, style)
 };
 
 export default PixiApp;
