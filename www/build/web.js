@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "d9eb4e77c2230648e775"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "637d9ab0cac3c93c826d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -706,7 +706,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(190)(__webpack_require__.s = 190);
+/******/ 	return hotCreateRequire(191)(__webpack_require__.s = 191);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -18738,7 +18738,7 @@ function encodeBinary(input) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__js_pixi_app__ = __webpack_require__(188);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__js_pixi_app__ = __webpack_require__(189);
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0__js_pixi_app__["a" /* default */]);
 
@@ -18747,7 +18747,7 @@ function encodeBinary(input) {
 /* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "a6e75eada5854531c39150dceb001fd7.png";
+module.exports = __webpack_require__.p + "f96026bd98672018440c2dbcb70d62ec.png";
 
 /***/ }),
 /* 90 */
@@ -39713,63 +39713,152 @@ module.exports = function(module) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_c_png__ = __webpack_require__(89);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_c_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__img_c_png__);
+const defaultOptions = {
+    width: null,
+    height: null
+};
+
+const PROPORTIONS_MULT = 1.8;
+const HORIZONTAL_SQUARES_COUNT = 10;
+
+const calcSquareSize = (width) => {
+    return Math.floor(width / HORIZONTAL_SQUARES_COUNT)
+};
+
+const calcFieldSize = (width, height) => {
+    // height ~= 2 * width
+    if (height >= width * PROPORTIONS_MULT) {
+        width -= (width % HORIZONTAL_SQUARES_COUNT);
+        return {
+            width: width,
+            height: width * PROPORTIONS_MULT
+        }
+    } else {
+        height -= (height % (HORIZONTAL_SQUARES_COUNT * PROPORTIONS_MULT));
+        return {
+            width: height / PROPORTIONS_MULT,
+            height: height
+        }
+    }
+};
+
+class Game {
+    constructor(options) {
+        this.options = Object.assign({}, defaultOptions, options);
+        this.fieldRecatngle = calcFieldSize(this.options.width, this.options.height);
+        this.squareSize = calcSquareSize(this.fieldRecatngle.width);
+
+        console.log(this.fieldRecatngle, this.squareSize);
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Game;
+
+
+/***/ }),
+/* 189 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_cat_png__ = __webpack_require__(89);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img_cat_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__img_cat_png__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__game_js__ = __webpack_require__(188);
 const PIXI = __webpack_require__(158);
 
 
+
+let app;
+
 const PixiApp = () => {
-    // Scale mode for all textures, will retain pixelation
-    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+    configure();
+    app = createApp();
 
-    var width = window.innerWidth,
-        height = window.innerHeight,
-        app = new PIXI.Application(width, height, { backgroundColor: 0x1099bb });
+    let info = createInfo();
+    info.x = 10;
+    info.y = 10;
+    app.stage.addChild(info);
+    info.text = `width: ${app.screen.width}, height: ${app.screen.height}`;
 
-    document.body.appendChild(app.view);
+    PIXI.loader.add(__WEBPACK_IMPORTED_MODULE_0__img_cat_png___default.a).load(start);
+};
 
-    var basicText = new PIXI.Text('width :' + width + ' height: ' + height);
-    basicText.x = 10;
-    basicText.y = 10;
+const start = () => {
+    let game = new __WEBPACK_IMPORTED_MODULE_1__game_js__["a" /* default */]({
+        width: app.screen.width,
+        height: app.screen.height
+    });
 
-    app.stage.addChild(basicText);
+    let cats = [];
 
-    // sprite
-    var sprite = PIXI.Sprite.fromImage(__WEBPACK_IMPORTED_MODULE_0__img_c_png___default.a);
-    // Set the initial position
-    sprite.anchor.set(0.5);
-    sprite.x = app.renderer.width / 2;
-    sprite.y = app.renderer.height / 2;
-
-    // Opt-in to interactivity
-    sprite.interactive = true;
-
-    // Shows hand cursor
-    sprite.buttonMode = true;
-
-    // Pointers normalize touch and mouse
-    sprite.on('pointerdown', onClick);
-
-    // Alternatively, use the mouse & touch events:
-    // sprite.on('click', onClick); // mouse-only
-    // sprite.on('tap', onClick); // touch-only
-
-    app.stage.addChild(sprite);
-
-    function onClick () {
-        sprite.scale.x *= 1.25;
-        sprite.scale.y *= 1.25;
+    for (let i = 0; i < 15; i++) {
+        cats.push(createCatSprite(app));
     }
 
-    console.log('app running2');
+    app.ticker.add((delta) => {
+        let cat;
+        for (let i = 0; i < cats.length; i++) {
+            cat = cats[i];
+            cat.y = cat.y +  cat.speed;
+
+            if (cat.y > app.renderer.height) {
+                app.stage.removeChild(cat);
+                cat = createCatSprite(app);
+            }
+            cats[i] = cat;
+        }
+    })
+};
+
+const createApp = () => {
+    let width = window.innerWidth,
+        height = window.innerHeight,
+        app = new PIXI.Application(width, height, {
+            backgroundColor: 0x1099bb,
+            //antialiasing: true,
+            //antialias: true,
+            //forceFXAA: true,
+            transparent: false,
+            resolution: 1
+        });
+    document.body.appendChild(app.view);
+
+    return app;
+};
+
+const configure = () => {
+    // Scale mode for all textures, will retain pixelation
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
+};
+
+const createInfo = () => {
+    let style = new PIXI.TextStyle({
+        fontSize: 12
+    });
+    return new PIXI.Text(``, style)
+};
+
+const createCatSprite = (app) => {
+    let cat = new PIXI.Container(),
+        catSprite = PIXI.Sprite.fromImage(__WEBPACK_IMPORTED_MODULE_0__img_cat_png___default.a),
+        size = 32 + Math.random() * 64;
+    size = size - (size % 2);
+    catSprite.height = size;
+    catSprite.width = size;
+    catSprite.tint = Math.random() * 0xFFFFFF;
+    cat.addChild(catSprite);
+    cat.x = (app.renderer.width - size) * Math.random();
+    cat.y = size / 2;
+    cat.speed = 1 + Math.random();
+    cat.cacheAsBitmap = true;
+    app.stage.addChild(cat);
+    return cat;
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (PixiApp);
 
 
 /***/ }),
-/* 189 */,
-/* 190 */
+/* 190 */,
+/* 191 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
