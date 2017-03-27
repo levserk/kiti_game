@@ -25,25 +25,28 @@ const start = () => {
 
     app.stage.addChild(game);
 
-    let cats = [];
-
-    for (let i = 0; i < 15; i++) {
-        cats.push(createCatSprite(app));
-    }
-
     app.ticker.add((delta) => {
-        let cat;
-        for (let i = 0; i < cats.length; i++) {
-            cat = cats[i];
-            cat.y = cat.y +  cat.speed;
+        game.render(delta)
+    });
 
-            if (cat.y > app.renderer.height) {
-                app.stage.removeChild(cat);
-                cat = createCatSprite(app);
-            }
-            cats[i] = cat;
-        }
-    })
+    //let cats = [];
+    //for (let i = 0; i < 15; i++) {
+    //    cats.push(createCatSprite(app));
+    //}
+
+    //app.ticker.add((delta) => {
+    //    let cat;
+    //    for (let i = 0; i < cats.length; i++) {
+    //        cat = cats[i];
+    //        cat.y = cat.y +  cat.speed;
+    //
+    //        if (cat.y > app.renderer.height) {
+    //            app.stage.removeChild(cat);
+    //            cat = createCatSprite(app);
+    //        }
+    //        cats[i] = cat;
+    //    }
+    //})
 };
 
 const createApp = () => {
