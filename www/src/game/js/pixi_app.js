@@ -2,6 +2,8 @@ const PIXI = require('pixi.js');
 import textures from './textures'
 import Game from './game.js';
 
+let bindRender;
+
 class PixiApp {
     constructor() {
         configure();
@@ -17,6 +19,14 @@ class PixiApp {
 
         PIXI.loader.add('cat', textures.cat)
             .load(() => { this.start() });
+
+
+        if (module.hot) {
+            module.hot.dispose(() => {
+                PIXI.loader.reset();
+            })
+        }
+        this.renderTime = Date.now();
     }
 
     start() {
@@ -30,6 +40,13 @@ class PixiApp {
         this.app.ticker.add((delta) => {
             this.game.render(delta)
         });
+    }
+
+    render() {
+        requestAnimationFrame(bindRender);
+        console.log(Date.now() - this.renderTime);
+        this.game.render();
+        this.renderTime = Date.now();
     }
 
     createApp()  {
@@ -52,7 +69,7 @@ class PixiApp {
 
 const configure = () => {
     // Scale mode for all textures, will retain pixelation
-    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
+    //PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
 };
 
 const createInfo = () => {
@@ -64,9 +81,3 @@ const createInfo = () => {
 
 
 export default PixiApp;
-
-if (module.hot) {
-    module.hot.dispose(() => {
-        PIXI.loader.reset();
-    })
-}

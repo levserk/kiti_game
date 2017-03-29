@@ -8,7 +8,7 @@ const resources = PIXI.loader.resources;
 const defaultOptions = {
     width: null,
     height: null,
-    speed: 0.2, // sizes
+    speed: 0.3, // sizes
     delayBetweenCreations: 1500
 };
 
@@ -36,8 +36,6 @@ export default class Game extends PIXI.Container{
         this.removingKitties = [];
         this.speed = this.size * this.options.speed;
 
-        console.log(this.fieldRecatngle, this.size);
-
         this.addGameField();
     }
 
@@ -46,7 +44,6 @@ export default class Game extends PIXI.Container{
         this.addChild(this.gameField);
         this.gameField.x = (this.options.width - this.gameField.width) / 2;
         this.gameField.y = (this.options.height - this.gameField.height) / 2;
-        console.log('gf', this.gameField.width);
     }
 
     render(delta) {
@@ -83,7 +80,7 @@ export default class Game extends PIXI.Container{
     downfallKitties(delta) {
         let kitti;
         this.fallingKitties.forEach((kitti) => {
-            kitti.y += kitti.speed * delta;
+            kitti.y = Math.floor(kitti.y + kitti.speed * delta);
             this.checkKittiFallDown(kitti)
         });
     }

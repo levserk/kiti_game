@@ -20,14 +20,17 @@ export default class GameField extends PIXI.Container {
     }
 
     drawBorder(width, height) {
+        let backgorund = new PIXI.Container();
         let graphics = new PIXI.Graphics();
         graphics.beginFill(FIELD_BACKGROUND_COLOR);
         graphics.lineStyle(BORDER_WIDTH, BORDER_COLOR, 1);
         graphics.drawRect(0, 0, width + 2 * BORDER_WIDTH, height + 2 * BORDER_WIDTH);
         graphics.endFill();
-        this.addChild(graphics);
+        backgorund.addChild(graphics);
+        backgorund.cacheAsBitmap = true;
         graphics.x = graphics.x - BORDER_WIDTH;
         graphics.y = graphics.y - BORDER_WIDTH;
+        this.addChild(backgorund);
     }
 
     getKittiesRow(kitti) {
