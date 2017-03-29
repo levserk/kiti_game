@@ -1,11 +1,15 @@
 const PIXI = require('pixi.js');
-import catImg from '../img/cat.png';
+
 import {colors, VERTICAL_SQUARES_COUNT, HORIZONTAL_SQUARES_COUNT} from './const.js'
 import GameField from './game_field'
 
+const resources = PIXI.loader.resources;
+
 const defaultOptions = {
     width: null,
-    height: null
+    height: null,
+    speed: 0.2, // sizes
+    delayBetweenCreations: 1500
 };
 
 const calcSquareSize = (width, height) => {
@@ -19,8 +23,6 @@ const calcFieldSize = (size, width, height) => {
    }
 };
 
-const SPEED_SIZES = 0.3;
-
 export default class Game extends PIXI.Container{
     constructor(options) {
         super();
@@ -32,7 +34,7 @@ export default class Game extends PIXI.Container{
         this.gameField = null;
         this.fallingKitties = new Map();
         this.removingKitties = [];
-        this.speed = this.size * SPEED_SIZES;
+        this.speed = this.size * this.options.speed;
 
         console.log(this.fieldRecatngle, this.size);
 
@@ -61,10 +63,12 @@ export default class Game extends PIXI.Container{
     }
 
     createKitti() {
-        if (this.fallingKitties.size || this.removingKitties.length){
+        if (this.fallingKitties.size || this.removingKitties.length
+            || (this.timeLastCreate && Date.now() - this.timeLastCreate < this.options.delayBetweenCreations)){
             return;
         }
         let kitti = new Kitti(this.size, colors[Math.floor(Math.random()*colors.length)]);
+        this.timeLastCreate = Date.now();
         this.gameField.addChild(kitti);
         kitti.x = Math.floor(Math.random() * this.gameField.cols) * this.gameField.cellSize;
         kitti.y = -this.gameField.cellSize;
@@ -104,6 +108,11 @@ export default class Game extends PIXI.Container{
         }
         this.fallingKitties.delete(kitti.id);
         this.gameField.setKitti(kitti);
+
+        if (kittiRow === 0) {
+            console.log(`Game over`);
+            this.gameField.clear();
+        }
     }
 
     checkRepeatingKitties() {
@@ -131,13 +140,17 @@ export default class Game extends PIXI.Container{
             }
         }
     }
+
+    reset() {
+
+    }
 }
 
 class Kitti extends PIXI.Container {
     constructor(size, color) {
         super();
 
-        let catSprite = PIXI.Sprite.fromImage(catImg);
+        let catSprite = new PIXI.Sprite(resources.cat.texture);
         catSprite.height = size;
         catSprite.width = size;
         catSprite.tint = color;

@@ -53,10 +53,10 @@ module.exports = {
         hot: true,
         contentBase: path.resolve('./www/'),
         publicPath: '/build/',
-        port: 8000,
-        inline: true
+        port: 8000
     },
     plugins: [
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin()
     ]
 };

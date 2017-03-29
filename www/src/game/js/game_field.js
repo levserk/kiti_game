@@ -51,9 +51,9 @@ export default class GameField extends PIXI.Container {
 
         this.gameMap.set(kittiRow, kittiColl, kitti);
         this.kitties.set(kitti.id, kitti);
-        console.log(`-----`);
-        this.gameMap.printMap();
-        console.log(kittiesArrayToStr(this.gameMap.getRepeats()));
+        //console.log(`-----`);
+        //this.gameMap.printMap();
+       // console.log(kittiesArrayToStr(this.gameMap.getRepeats()));
     }
 
     unsetKitti(kitti) {
@@ -70,6 +70,13 @@ export default class GameField extends PIXI.Container {
         this.unsetKitti(kitti);
     }
 
+    clear() {
+        for (let kitti of this.kitties.values()) {
+            this.removeKitti(kitti)
+        }
+
+        this.kitties = new Map();
+    }
 }
 
 

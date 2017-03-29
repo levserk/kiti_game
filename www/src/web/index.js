@@ -1,3 +1,15 @@
-import PixiApp from '../game/index.js';
+import PixiApp from '../game/js/pixi_app.js';
 
-PixiApp();
+const init = () => {
+    window.pixiApp = new PixiApp();
+};
+
+init();
+
+
+if (module.hot) {
+    module.hot.accept(['../game/js/pixi_app.js'], () => {
+        document.body.removeChild(pixiApp.view);
+        init();
+    });
+}
