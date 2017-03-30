@@ -13,7 +13,7 @@ var app = {
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
 
-        PixiApp();
+        new PixiApp();
     },
 
     // Update DOM on a Received Event

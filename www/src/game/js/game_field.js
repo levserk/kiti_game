@@ -17,20 +17,21 @@ export default class GameField extends PIXI.Container {
         this.drawBorder(rectangle.width, rectangle.height);
         this.gameMap = new GameMap(this.cols, this.rows);
         this.kitties = new Map();
+        this.interactive = true;
     }
 
     drawBorder(width, height) {
-        let backgorund = new PIXI.Container();
+        let background = new PIXI.Container();
         let graphics = new PIXI.Graphics();
         graphics.beginFill(FIELD_BACKGROUND_COLOR);
         graphics.lineStyle(BORDER_WIDTH, BORDER_COLOR, 1);
         graphics.drawRect(0, 0, width + 2 * BORDER_WIDTH, height + 2 * BORDER_WIDTH);
         graphics.endFill();
-        backgorund.addChild(graphics);
-        backgorund.cacheAsBitmap = true;
+        background.addChild(graphics);
+        background.cacheAsBitmap = true;
         graphics.x = graphics.x - BORDER_WIDTH;
         graphics.y = graphics.y - BORDER_WIDTH;
-        this.addChild(backgorund);
+        this.addChild(background);
     }
 
     getKittiesRow(kitti) {
@@ -41,36 +42,70 @@ export default class GameField extends PIXI.Container {
         return (kitti.x - kitti.x % this.cellSize) / this.cellSize;
     }
 
-    checkKittiIntersection(kitti){
+    getRowColPositionPoint(kittiRow, kittiColl) {
+        return {
+            x: kittiColl * this.cellSize,
+            y: kittiRow * this.cellSize
+        }
+    }
+
+    checkRowColIntersection(kittiRow, kittiColl) {
+        return this.gameMap.get(kittiRow, kittiColl) !== null
+    }
+
+    checkBelowKittiIntersection(kitti){
         let kittiRow = this.getKittiesRow(kitti) + 1,
             kittiColl = this.getKittiesCol(kitti);
 
-        return this.gameMap.get(kittiRow, kittiColl) !== null
+        return kittiRow >= this.rows || this.gameMap.get(kittiRow, kittiColl) !== null
+    }
+
+    checkAboveKittiIntersection(kitti) {
+        let kittiRow = this.getKittiesRow(kitti) - 1,
+            kittiColl = this.getKittiesCol(kitti);
+
+        return kittiRow < 0 || this.gameMap.get(kittiRow, kittiColl) !== null
+    }
+
+    checkPointInBounds(point) {
+        if (point.row) {
+            return point.row >= 0 && point.row < this.rows && point.col >=0 && point.col < this.cols
+        }
+        return false;
     }
 
     setKitti(kitti) {
         let kittiRow = this.getKittiesRow(kitti),
-            kittiColl = this.getKittiesCol(kitti);
+            kittiColl = this.getKittiesCol(kitti),
+            oldKitti = this.gameMap.get(kittiRow, kittiColl);
+
+        if (oldKitti) {
+            console.warn(`previous kitti exists! oldId: ${oldKitti.id}, newId: ${kitti.id}`);
+            this.removeKitti(oldKitti);
+        }
 
         this.gameMap.set(kittiRow, kittiColl, kitti);
         this.kitties.set(kitti.id, kitti);
+        kitti.buttonMode = true;
         //console.log(`-----`);
         //this.gameMap.printMap();
-       // console.log(kittiesArrayToStr(this.gameMap.getRepeats()));
+        //console.log(kittiesArrayToStr(this.gameMap.getRepeats()));
     }
 
     unsetKitti(kitti) {
         if (!this.kitties.has(kitti.id)) {
-            console.error(`game field does't contain kitti`, kitti);
+            console.error(`game field does't contain kitti ${kitti.id}`, kitti);
             return;
         }
         this.gameMap.remove(kitti.row, kitti.col);
         this.kitties.delete(kitti.id);
+        kitti.buttonMode = false;
     }
 
     removeKitti(kitti) {
         this.removeChild(kitti);
         this.unsetKitti(kitti);
+        kitti.destroy();
     }
 
     clear() {

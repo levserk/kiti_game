@@ -23,6 +23,7 @@ class PixiApp {
 
         if (module.hot) {
             module.hot.dispose(() => {
+                this.game.destroy();
                 PIXI.loader.reset();
             })
         }
