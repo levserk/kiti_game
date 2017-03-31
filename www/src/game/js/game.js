@@ -1,4 +1,5 @@
 const PIXI = require('pixi.js');
+const TWEEN = require('tween.js');
 
 import {colors, VERTICAL_SQUARES_COUNT, HORIZONTAL_SQUARES_COUNT} from './const.js'
 import GameField from './game_field'
@@ -9,7 +10,7 @@ const defaultOptions = {
     width: null,
     height: null,
     speed: 0.3, // sizes
-    delayBetweenCreations: 1500
+    delayBetweenCreations: 150
 };
 
 const calcSquareSize = (width, height) => {
@@ -49,6 +50,7 @@ export default class Game extends PIXI.Container{
     }
 
     render(delta) {
+        TWEEN.update();
         // render game world
 
         // add new kitti if there are't falling kitties
@@ -62,7 +64,7 @@ export default class Game extends PIXI.Container{
     }
 
     createKitti() {
-        if (this.fallingKitties.size || this.removingKitties.length
+        if (this.fallingKitties.size || this.removingKitties.length || TWEEN.getAll().length
             || (this.timeLastCreate && Date.now() - this.timeLastCreate < this.options.delayBetweenCreations)){
             return;
         }
@@ -122,6 +124,7 @@ export default class Game extends PIXI.Container{
         }
         this.fallingKitties.delete(kitti.id);
         this.gameField.setKitti(kitti);
+        kitti.addTweenFailDown();
 
         if (kittiRow === 0) {
             console.log(`Game over`);
@@ -132,7 +135,7 @@ export default class Game extends PIXI.Container{
     }
 
     checkRepeatingKitties() {
-        if (this.fallingKitties.length){
+        if (this.fallingKitties.length || TWEEN.getAll().length){
             return;
         }
         this.removingKitties = this.gameField.gameMap.getRepeats();
@@ -228,6 +231,14 @@ export default class Game extends PIXI.Container{
         }
     }
 
+
+    destroy() {
+        TWEEN.removeAll();
+
+        super.destroy();
+    }
+
+
     reset() {
 
     }
@@ -236,12 +247,18 @@ export default class Game extends PIXI.Container{
 class Kitti extends PIXI.Container {
     constructor(size, color) {
         super();
-
-        let catSprite = new PIXI.Sprite(resources.cat.texture);
-        catSprite.height = size;
-        catSprite.width = size;
-        catSprite.tint = color;
-        this.addChild(catSprite);
+        this.size = size;
+        this.spriteSize = size;
+        this.catSprite = new PIXI.Sprite(resources.cat.texture);
+        this.catSprite.height = size * 1.2;
+        this.catSprite.width = size * 0.8;
+        this.catSprite.tint = color;
+        this.addChild(this.catSprite);
+        //this.width = size;
+        //this.height = size;
+        this.catSprite.anchor.set(0.5);
+        this.catSprite.x = size / 2;
+        this.catSprite.y = size / 2;
         this.cacheAsBitmap = true;
         this.speed = 0;
         this.col = null;
@@ -261,10 +278,61 @@ class Kitti extends PIXI.Container {
 
     setSpeed(val) {
         this.speed = val;
+        this.catSprite.height = this.size * 1.2;
+        this.catSprite.width = this.size * 0.8;
     }
 
     setPosition(point) {
         this.x = point.x;
         this.y = point.y;
     }
+
+    addTweenFailDown() {
+        this.cacheAsBitmap = false;
+        let time = 500;
+
+        this.tweenWidth = new TWEEN.Tween(this.catSprite)
+            .to({width: this.size, height: this.size}, time)
+            //.easing(TWEEN.Easing.Back.Out)
+            .easing(elasticOut)
+            .start()
+            .onUpdate(() => {
+                if (this.height < this.size) {
+                    this.catSprite.y = this.size * 0.5 + (this.size - this.height)
+                }
+                else this.catSprite.y = this.size * 0.5
+            })
+            .onComplete(() => {
+                this.cacheAsBitmap = true;
+            });
+    }
+
+    destroy() {
+        if (this.tweenWidth) {
+            this.tweenWidth.stop();
+            this.tweenWidth = null;
+        }
+
+        if (this.tweenHeight) {
+            this.tweenHeight.stop();
+            this.tweenHeight = null;
+        }
+
+        super.destroy();
+    }
 }
+
+const elasticOut = (k) => {
+
+        if (k === 0) {
+            return 0;
+        }
+
+        if (k === 1) {
+            return 1;
+        }
+
+        let  p = 0.3;
+        return Math.pow(2,-10*k) * Math.sin((k-p/4)*(2*Math.PI)/p) + 1;
+
+    };

@@ -103,9 +103,9 @@ export default class GameField extends PIXI.Container {
     }
 
     removeKitti(kitti) {
+        kitti.destroy();
         this.removeChild(kitti);
         this.unsetKitti(kitti);
-        kitti.destroy();
     }
 
     clear() {
