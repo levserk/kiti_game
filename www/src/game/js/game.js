@@ -3,6 +3,7 @@ const TWEEN = require('tween.js');
 
 import {colors, VERTICAL_SQUARES_COUNT, HORIZONTAL_SQUARES_COUNT} from './const.js'
 import GameField from './game_field'
+import Particles from './particles/particles';
 
 const resources = PIXI.loader.resources;
 
@@ -37,8 +38,19 @@ export default class Game extends PIXI.Container{
         this.removingKitties = [];
         this.speed = this.size * this.options.speed;
         this.draggingKitti = null;
+        this.isRunning = true;
 
         this.addGameField();
+        this.addParticlesContainer();
+        this.handleKeyPress();
+    }
+
+    handleKeyPress() {
+        window.onkeydown = (e) => {
+            if (e && e.keyCode === 0 || e.keyCode === 32){
+                this.pause();
+            }
+        }
     }
 
     addGameField() {
@@ -49,7 +61,17 @@ export default class Game extends PIXI.Container{
         this.gameField.on('pointermove', this.onPointerMove.bind(this))
     }
 
+    addParticlesContainer() {
+        this.particles = new Particles(this.gameField.width, this.gameField.height);
+        this.particles.x = this.gameField.x;
+        this.particles.y = this.gameField.y;
+        this.addChild(this.particles);
+    }
+
     render(delta) {
+        if (!this.isRunning){
+            return;
+        }
         TWEEN.update();
         // render game world
 
@@ -61,6 +83,7 @@ export default class Game extends PIXI.Container{
         this.checkRepeatingKitties();
         this.removeKitties();
         this.findFallingKitties();
+        this.particles.render(delta);
     }
 
     createKitti() {
@@ -142,9 +165,12 @@ export default class Game extends PIXI.Container{
     }
 
     removeKitties() {
+        let kitti;
         for (let i = 0; i < this.removingKitties.length; i++) {
             // call this after animation end
-            this.gameField.removeKitti(this.removingKitties[i]);
+            kitti = this.removingKitties[i];
+            this.particles.create(kitti.x + kitti.width / 2 , kitti.y + kitti.height / 2, kitti.color);
+            this.gameField.removeKitti(kitti);
         }
         this.removingKitties = []
     }
@@ -176,7 +202,9 @@ export default class Game extends PIXI.Container{
     }
 
     onKittiPointerDown(e, kitti) {
-        console.log('d', e.data.getLocalPosition(this.gameField));
+        let pos = e.data.getLocalPosition(this.gameField);
+        console.log('d', pos);
+        this.particles.create(pos.x, pos.y, 0xe00000);
         if (this.draggingKitti || !kitti.buttonMode || this.gameField.checkAboveKittiIntersection(kitti)){
             return;
         } else {
@@ -238,6 +266,10 @@ export default class Game extends PIXI.Container{
         super.destroy();
     }
 
+    pause() {
+        this.isRunning = !this.isRunning
+    }
+
 
     reset() {
 
@@ -248,6 +280,7 @@ class Kitti extends PIXI.Container {
     constructor(size, color) {
         super();
         this.size = size;
+
         this.spriteSize = size;
         this.catSprite = new PIXI.Sprite(resources.cat.texture);
         this.catSprite.height = size * 1.2;
@@ -264,6 +297,7 @@ class Kitti extends PIXI.Container {
         this.col = null;
         this.row = null;
         this.value = colors.indexOf(color);
+        this.color = color;
         this.id = Date.now() + '_' + Math.round(Math.random()*100000);
         this.interactive = true;
     }
