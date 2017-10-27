@@ -8,19 +8,19 @@ class Particle extends PIXI.Graphics {
 
         this.size = size > 3 ? size : 3;
         this.color = color;
+        this.startColor = color;
         this.timeCreation = Date.now();
         this.hspeed = 0;
         this.vspeed = 0;
         this.haccel = 0;
         this.vaccel = 0;
+        this.fric = 0.95;
 
         this.draw();
     }
 
     draw() {
-        this.drawFilledCircleWithoutBounds(this.size, this.color, 1);
-        this.drawFilledCircleWithoutBounds(this.size * 0.6, WHITE, 0.5);
-        this.drawFilledCircleWithoutBounds(this.size * 0.4, WHITE, 0.9);
+        this.drawFilledCircleWithoutBounds(this.size, this.startColor, 1);
     }
 
     drawFilledCircleWithoutBounds(radius, color, alpha) {
@@ -31,8 +31,8 @@ class Particle extends PIXI.Graphics {
     }
 
     render() {
-        this.hspeed += this.haccel;
-        this.vspeed += this.vaccel;
+        this.hspeed = this.hspeed*this.fric + this.haccel;
+        this.vspeed = this.vspeed*this.fric + this.vaccel;
         this.x += this.hspeed;
         this.y += this.vspeed;
     }

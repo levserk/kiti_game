@@ -3,9 +3,10 @@ const PIXI = require('pixi.js');
 import Particle from './particle';
 
 const MAX = 5000;
-const TIME_LIFE = 3000;
-const SPEED = 3;
-const MAX_SIZE = 10;
+const TIME_LIFE = 1500;
+const SPEED = 10;
+const FRIC = 0.98;
+const MAX_SIZE = 5;
 
 const options = {
     scale: true,
@@ -58,10 +59,15 @@ class Particles extends PIXI.Container {
     createParticle(x, y, color) {
         let particle = new Particle(Math.random() * MAX_SIZE, color);
         this.addChild(particle);
+        particle.startColor = 0xffffff;
+        particle.angle = Math.random() * 2 * Math.PI;
+        particle.speed = SPEED / 2 + Math.random() * SPEED / 3;
+        particle.fric = FRIC - Math.random() * 3 / 100;
         particle.x = x;
         particle.y = y;
-        particle.hspeed = SPEED - Math.random() * SPEED * 2;
-        particle.vspeed = SPEED - Math.random() * SPEED * 2;
+        particle.hspeed = particle.speed * Math.cos(particle.angle);
+        particle.vspeed = particle.speed * Math.sin(particle.angle);
+        particle.vaccel = 0.2
     }
 }
 
