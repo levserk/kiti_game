@@ -16,9 +16,10 @@ class PixiApp {
         this.app.stage.addChild(info);
         info.text = `width: ${this.app.screen.width}, height: ${this.app.screen.height}`;
 
+        const loader = PIXI.Loader.shared;
 
-        PIXI.loader.add('cat', textures.cat)
-            .load(() => { this.start() });
+        loader.add('cat', textures.cat)
+            .load((loader, resources) => { this.start(resources) });
 
 
         if (module.hot) {
@@ -30,17 +31,18 @@ class PixiApp {
         this.renderTime = Date.now();
     }
 
-    start() {
+    start(resources) {
         this.game = new Game({
             width: this.app.screen.width,
             height: this.app.screen.height
-        });
+        }, resources);
 
         this.app.stage.addChild(this.game);
 
         this.app.ticker.add((delta) => {
             this.game.render(delta)
         });
+        console.log(this.app)
     }
 
     render() {

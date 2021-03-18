@@ -5,8 +5,6 @@ import {colors, VERTICAL_SQUARES_COUNT, HORIZONTAL_SQUARES_COUNT} from './const.
 import GameField from './game_field'
 import Particles from './particles/particles';
 
-const resources = PIXI.loader.resources;
-
 const defaultOptions = {
     width: null,
     height: null,
@@ -26,9 +24,10 @@ const calcFieldSize = (size, width, height) => {
 };
 
 export default class Game extends PIXI.Container{
-    constructor(options) {
+    constructor(options, resources) {
         super();
 
+        this.resources = resources;
         this.options = Object.assign({}, defaultOptions, options);
         this.size = calcSquareSize(this.options.width, this.options.height);
         this.fieldRecatngle = calcFieldSize(this.size, this.options.width, this.options.height);
@@ -91,7 +90,7 @@ export default class Game extends PIXI.Container{
             || (this.timeLastCreate && Date.now() - this.timeLastCreate < this.options.delayBetweenCreations)){
             return;
         }
-        let kitti = new Kitti(this.size, colors[Math.floor(Math.random()*colors.length)]);
+        let kitti = new Kitti(this.size, colors[Math.floor(Math.random()*colors.length)], this.resources.cat.texture);
         this.timeLastCreate = Date.now();
         this.gameField.addChild(kitti);
         kitti.x = Math.floor(Math.random() * this.gameField.cols) * this.gameField.cellSize;
@@ -277,12 +276,12 @@ export default class Game extends PIXI.Container{
 }
 
 class Kitti extends PIXI.Container {
-    constructor(size, color) {
+    constructor(size, color, texture) {
         super();
         this.size = size;
 
         this.spriteSize = size;
-        this.catSprite = new PIXI.Sprite(resources.cat.texture);
+        this.catSprite = new PIXI.Sprite(texture);
         this.catSprite.height = size * 1.2;
         this.catSprite.width = size * 0.8;
         this.catSprite.tint = color;
