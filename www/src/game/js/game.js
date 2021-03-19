@@ -5,24 +5,6 @@ import {colors, VERTICAL_SQUARES_COUNT, HORIZONTAL_SQUARES_COUNT} from './const.
 import GameField from './game_field'
 import Particles from './particles/particles';
 
-const defaultOptions = {
-    width: null,
-    height: null,
-    speed: 0.3, // sizes
-    delayBetweenCreations: 150
-};
-
-const calcSquareSize = (width, height) => {
-    return Math.min(Math.floor(width / HORIZONTAL_SQUARES_COUNT),Math.floor(height / VERTICAL_SQUARES_COUNT))
-};
-
-const calcFieldSize = (size, width, height) => {
-   return {
-       width: HORIZONTAL_SQUARES_COUNT * size,
-       height: VERTICAL_SQUARES_COUNT * size
-   }
-};
-
 export default class Game extends PIXI.Container{
     constructor(options, resources) {
         super();
@@ -40,8 +22,8 @@ export default class Game extends PIXI.Container{
         this.isRunning = true;
 
         this.addGameField();
-        this.addParticlesContainer();
-        this.handleKeyPress();
+        //this.addParticlesContainer();
+        //this.handleKeyPress();
     }
 
     handleKeyPress() {
@@ -57,7 +39,7 @@ export default class Game extends PIXI.Container{
         this.addChild(this.gameField);
         this.gameField.x = (this.options.width - this.gameField.width) / 2;
         this.gameField.y = (this.options.height - this.gameField.height) / 2;
-        this.gameField.on('pointermove', this.onPointerMove.bind(this))
+        this.gameField.on('pointermove', this.onPointerMove.bind(this));
     }
 
     addParticlesContainer() {
@@ -82,7 +64,7 @@ export default class Game extends PIXI.Container{
         this.checkRepeatingKitties();
         this.removeKitties();
         this.findFallingKitties();
-        this.particles.render(delta);
+        //this.particles.render(delta);
     }
 
     createKitti() {

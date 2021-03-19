@@ -67,6 +67,8 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    
+    new webpack.ProvidePlugin({
+      PIXI: 'pixi.js'
+    })
   ]
 };
