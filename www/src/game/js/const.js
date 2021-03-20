@@ -22,3 +22,11 @@ export const defaultOptions = {
   speed: 0.3, // sizes
   delayBetweenCreations: 150
 };
+
+export function mpx(m, pscale = 30) {
+  return m * pscale;
+}
+
+export function pxm(p, pscale = 30) {
+  return p / pscale;
+}

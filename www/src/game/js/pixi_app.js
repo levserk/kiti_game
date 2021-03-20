@@ -1,6 +1,6 @@
 const PIXI = require("pixi.js");
 import textures from "./textures";
-import Game from "./matterGame.js";
+import Game from "./plunkGame.js";
 
 let bindRender;
 
@@ -37,7 +37,8 @@ class PixiApp {
         width: this.app.screen.width,
         height: this.app.screen.height,
       },
-      resources
+      resources,
+      this.app.renderer
     );
 
     this.app.stage.addChild(this.game);
