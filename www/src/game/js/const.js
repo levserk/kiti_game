@@ -23,10 +23,10 @@ export const defaultOptions = {
   delayBetweenCreations: 150
 };
 
-export function mpx(m, pscale = 30) {
+export function mpx(m, pscale = 60) {
   return m * pscale;
 }
 
-export function pxm(p, pscale = 30) {
+export function pxm(p, pscale = 60) {
   return p / pscale;
 }

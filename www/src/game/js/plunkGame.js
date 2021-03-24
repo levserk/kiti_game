@@ -29,7 +29,16 @@ export default class Game extends PIXI.Container {
     this.objects = [];
     this.world = World(Vec2(0, 9.8), true);
     this.addGameField();
+    this.handleKeyPress();  
   }
+
+  handleKeyPress() {
+    window.onkeydown = (e) => {
+        if (e && e.keyCode === 0 || e.keyCode === 32){
+            this.addRandomKitti();
+        }
+    }
+}
 
   addGameField() {
     this.gameField = new GameField(this.fieldRecatngle, this.size);
@@ -37,27 +46,29 @@ export default class Game extends PIXI.Container {
     this.gameField.x = 0; //(this.options.width - this.gameField.width) / 2;
     this.gameField.y = (this.options.height - this.gameField.height) / 2 + 1;
 
-
     this.addBoundaries();
 
-
     for (let i = 0; i <= 3; i++) {
-      this.createKitti(
-        50 + Math.random() * (this.gameField.width - 50),
-        100 + Math.random() * 100,
-        this.size,
-        colors[Math.floor(Math.random() * colors.length)]
-      );
+      this.addRandomKitti();
     }
+  }
+
+  addRandomKitti() {
+    this.createKitti(
+      25 + Math.random() * (this.gameField.width - 50),
+      100 + Math.random() * 100,
+      this.size + Math.floor(Math.random() * this.size),
+      colors[Math.floor(Math.random() * colors.length)]
+    );
   }
 
   addBoundaries() {
     const w = this.gameField.width;
     const h = this.gameField.height;
-    this.createBoundary(0, 0, w, 2);
-    this.createBoundary(0, h, w, 2);
-    this.createBoundary(0, 0, 2, h);
-    this.createBoundary(w, 0, 2, h);
+    this.createBoundary(0 + w / 2, 1, w, 2);
+    this.createBoundary(0 + w / 2, h - 1, w, 2);
+    this.createBoundary(1, h / 2, 2, h);
+    this.createBoundary(w - 1, h  / 2, 2, h);
   }
 
   createBoundary(x, y, w, h) {
@@ -81,8 +92,9 @@ export default class Game extends PIXI.Container {
 
     const boundarySprite = new PIXI.Container();
     boundarySprite.addChild(g);
-    //boundarySprite.anchor.set(0.5);
-    boundarySprite.position.set(x, y);
+    //boundarySprite.pivot.x = width / 2;
+    //boundarySprite.pivot.y = height / 2;
+    boundarySprite.position.set(x - w / 2, y - h / 2);
     boundarySprite.rotation = 0;
     boundarySprite.body = boundary;
     boundarySprite.cacheAsBitmap = true;
@@ -94,8 +106,9 @@ export default class Game extends PIXI.Container {
     body.setPosition(Vec2(pxm(x), pxm(y)));
     const ballFixtureDef = {};
     ballFixtureDef.density = 10.0;
+    ballFixtureDef.restitution  = 0.8;
     ballFixtureDef.position = Vec2(0.0, 0.0);
-    body.createFixture(Circle(pxm(size)), ballFixtureDef);
+    body.createFixture(Circle(pxm(size / 2)), ballFixtureDef);
 
     const imageSprite = new PIXI.Sprite(this.resources.cat.texture);
     imageSprite.height = size;
