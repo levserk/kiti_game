@@ -8,7 +8,7 @@ import {
   mpx,
 } from "./const";
 import planck from "planck-js";
-const { Vec2, World, Edge, Circle } = planck;
+const { Vec2,Box, World, Edge, Circle, Polygon } = planck;
 
 const PIXI = require("pixi.js");
 
@@ -29,16 +29,36 @@ export default class Game extends PIXI.Container {
     this.objects = [];
     this.world = World(Vec2(0, 9.8), true);
     this.addGameField();
-    this.handleKeyPress();  
+    this.handleKeyPress();
   }
 
   handleKeyPress() {
     window.onkeydown = (e) => {
-        if (e && e.keyCode === 0 || e.keyCode === 32){
-            this.addRandomKitti();
-        }
-    }
-}
+      console.log(e.keyCode);
+      if (e && e.keyCode === 49) {
+        //1
+        this.addRandomKitti();
+      }
+      if (e && e.keyCode === 50) {
+        //2
+        this.createTriangle(
+          25 + Math.random() * (this.gameField.width - 50),
+          100 + Math.random() * 100,
+          this.size + Math.floor(Math.random() * this.size / 2),
+          colors[Math.floor(Math.random() * colors.length)]
+        );
+      }
+      if (e && e.keyCode === 51) {
+        //2
+        this.createBox(
+          25 + Math.random() * (this.gameField.width - 50),
+          100 + Math.random() * 100,
+          this.size + Math.floor(Math.random() * this.size / 2),
+          colors[Math.floor(Math.random() * colors.length)]
+        );
+      }
+    };
+  }
 
   addGameField() {
     this.gameField = new GameField(this.fieldRecatngle, this.size);
@@ -49,7 +69,7 @@ export default class Game extends PIXI.Container {
     this.addBoundaries();
 
     for (let i = 0; i <= 3; i++) {
-      this.addRandomKitti();
+      //this.addRandomKitti();
     }
   }
 
@@ -68,7 +88,7 @@ export default class Game extends PIXI.Container {
     this.createBoundary(0 + w / 2, 1, w, 2);
     this.createBoundary(0 + w / 2, h - 1, w, 2);
     this.createBoundary(1, h / 2, 2, h);
-    this.createBoundary(w - 1, h  / 2, 2, h);
+    this.createBoundary(w - 1, h / 2, 2, h);
   }
 
   createBoundary(x, y, w, h) {
@@ -106,7 +126,7 @@ export default class Game extends PIXI.Container {
     body.setPosition(Vec2(pxm(x), pxm(y)));
     const ballFixtureDef = {};
     ballFixtureDef.density = 10.0;
-    ballFixtureDef.restitution  = 0.8;
+    ballFixtureDef.restitution = 0.8;
     ballFixtureDef.position = Vec2(0.0, 0.0);
     body.createFixture(Circle(pxm(size / 2)), ballFixtureDef);
 
@@ -119,15 +139,84 @@ export default class Game extends PIXI.Container {
     imageSprite.position.set(x, y);
     this.addChild(imageSprite);
 
-    this.objects.push({sprite: imageSprite, body});
+    this.objects.push({ sprite: imageSprite, body });
+  }
+
+  createTriangle(x, y, size, color) {
+    const body = this.world.createBody().setDynamic();
+    const msize = pxm(size) / 2;
+    body.setPosition(Vec2(pxm(x), pxm(y)));
+    body.createFixture(
+      Polygon(
+        Vec2(-msize, 0), 
+        Vec2(0, msize), 
+        Vec2(msize, 0)),
+      {
+        density: 10,
+        friction: 0.3,
+        restitution: 0,
+        position: Vec2(0, 0),
+      }
+    );
+
+    const g = new PIXI.Graphics();
+    g.beginFill(color);
+    g.lineStyle(1, 0xffffff, 1);
+    g.drawPolygon([
+      new PIXI.Point(-size, 0),
+      new PIXI.Point(0, -size),
+      new PIXI.Point(size, 0),
+    ]);
+    g.endFill();
+    g.x = -size/2;
+    g.y = -size;
+
+    const sprite = new PIXI.Container();
+    sprite.addChild(g);
+    sprite.rotation = 0;
+    sprite.cacheAsBitmap = true;
+    this.addChild(sprite);
+  
+    this.objects.push({ sprite: sprite, body });
+  }
+
+  createBox(x, y, size, color) {
+    const body = this.world.createBody().setDynamic();
+    const msize = pxm(size) / 2;
+    body.setPosition(Vec2(pxm(x), pxm(y)));
+    body.createFixture(
+      Box(msize, msize),
+      {
+        density: 10,
+        restitution: 0,
+        position: Vec2(0, 0),
+      }
+    );
+
+    const g = new PIXI.Graphics();
+    g.beginFill(color);
+    g.lineStyle(1, 0xffffff, 1);
+    g.drawRect(0,0,size, size)
+    g.endFill();
+    g.x = -size/2;
+    g.y = -size/2;
+
+    const sprite = new PIXI.Container();
+    sprite.addChild(g);
+    //sprite.position.set(x - size / 2, y - size / 2);
+    sprite.rotation = 0;
+    sprite.cacheAsBitmap = true;
+    this.addChild(sprite);
+  
+    this.objects.push({ sprite: sprite, body });
   }
 
   update(delta) {
     this.world.step(1 / 60);
-    this.objects.forEach(({sprite, body}) => {
+    this.objects.forEach(({ sprite, body }) => {
       const pos = body.getPosition();
       // Make all pixi sprites follow the position and rotation of their body.
-      
+
       sprite.position.set(mpx(pos.x), mpx(pos.y));
       sprite.rotation = body.getAngle();
     });
