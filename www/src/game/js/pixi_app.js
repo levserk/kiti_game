@@ -1,6 +1,6 @@
 const PIXI = require("pixi.js");
 import textures from "./textures";
-import Game from "./plunkGame.js";
+import Game from "./plunkGameNext.js";
 
 let bindRender;
 
