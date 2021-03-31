@@ -1,14 +1,16 @@
-import GameField from "./game_field";
-import {
-  defaultOptions,
-  calcSquareSize,
-  calcFieldSize,
-  colors,
-  pxm,
-  mpx,
-} from "./const";
 import planck from "planck-js";
-const { Vec2,Box, World, Edge, Circle, Polygon } = planck;
+
+import {
+  calcFieldSize,
+  calcSquareSize,
+  colors,
+  defaultOptions,
+  mpx,
+  pxm
+} from "./const";
+import GameField from "./game_field";
+
+const { Vec2, Box, World, Edge, Circle, Polygon } = planck;
 
 const PIXI = require("pixi.js");
 
@@ -33,7 +35,7 @@ export default class Game extends PIXI.Container {
   }
 
   handleKeyPress() {
-    window.onkeydown = (e) => {
+    window.onkeydown = e => {
       console.log(e.keyCode);
       if (e && e.keyCode === 49) {
         //1
@@ -44,16 +46,25 @@ export default class Game extends PIXI.Container {
         this.createTriangle(
           25 + Math.random() * (this.gameField.width - 50),
           100 + Math.random() * 100,
-          this.size + Math.floor(Math.random() * this.size / 2),
+          this.size + Math.floor((Math.random() * this.size) / 2),
           colors[Math.floor(Math.random() * colors.length)]
         );
       }
       if (e && e.keyCode === 51) {
         //2
         this.createBox(
-          25 + Math.random() * (this.gameField.width - 50),
-          100 + Math.random() * 100,
-          this.size + Math.floor(Math.random() * this.size / 2),
+          100,// + Math.random() * (this.gameField.width - 50),
+          500 + Math.random() * 100,
+          this.size,
+          colors[Math.floor(Math.random() * colors.length)]
+        );
+      }
+      if (e && e.keyCode === 52) {
+        //3
+        this.createBoxPolygon(
+          100, //25 + Math.random() * (this.gameField.width - 50),
+          500 + Math.random() * 100,
+          this.size,
           colors[Math.floor(Math.random() * colors.length)]
         );
       }
@@ -144,18 +155,15 @@ export default class Game extends PIXI.Container {
 
   createTriangle(x, y, size, color) {
     const body = this.world.createBody().setDynamic();
-    const msize = pxm(size) / 2;
+    const msize = pxm(size);
     body.setPosition(Vec2(pxm(x), pxm(y)));
     body.createFixture(
-      Polygon(
-        Vec2(-msize, 0), 
-        Vec2(0, msize), 
-        Vec2(msize, 0)),
+      Polygon(Vec2(-1 * msize, 1 * msize), Vec2(0, 2 * msize), Vec2(1 * msize, 1 * msize)),
       {
         density: 10,
         friction: 0.3,
         restitution: 0,
-        position: Vec2(0, 0),
+        position: Vec2(0, 0)
       }
     );
 
@@ -163,12 +171,12 @@ export default class Game extends PIXI.Container {
     g.beginFill(color);
     g.lineStyle(1, 0xffffff, 1);
     g.drawPolygon([
-      new PIXI.Point(-size, 0),
-      new PIXI.Point(0, -size),
-      new PIXI.Point(size, 0),
+      new PIXI.Point(-1 * size, 1 * size),
+      new PIXI.Point(0, 2 * size),
+      new PIXI.Point(1 * size, 1 * size)
     ]);
     g.endFill();
-    g.x = -size/2;
+    g.x = -size / 2;
     g.y = -size;
 
     const sprite = new PIXI.Container();
@@ -176,38 +184,75 @@ export default class Game extends PIXI.Container {
     sprite.rotation = 0;
     sprite.cacheAsBitmap = true;
     this.addChild(sprite);
-  
+
     this.objects.push({ sprite: sprite, body });
   }
 
-  createBox(x, y, size, color) {
+  createBoxPolygon(x, y, size, color) {
     const body = this.world.createBody().setDynamic();
-    const msize = pxm(size) / 2;
+    const msize = pxm(size);
     body.setPosition(Vec2(pxm(x), pxm(y)));
     body.createFixture(
-      Box(msize, msize),
+      Polygon(
+        Vec2(-1 * msize, 1 * msize),
+        Vec2(1 * msize, 1 * msize),
+        Vec2(1 * msize, -1 * msize),
+        Vec2(-1 * msize, -1 * msize)
+      ),
       {
         density: 10,
+        friction: 0.3,
         restitution: 0,
-        position: Vec2(0, 0),
+        // /position: Vec2(0, 0)
       }
     );
 
     const g = new PIXI.Graphics();
     g.beginFill(color);
     g.lineStyle(1, 0xffffff, 1);
-    g.drawRect(0,0,size, size)
+    g.drawPolygon([
+      new PIXI.Point(-1 * size, 1 * size),
+      new PIXI.Point(1 * size, 1 * size),
+      new PIXI.Point(1 * size, -1 * size),
+      new PIXI.Point(-1 * size, -1 * size)
+    ]);
     g.endFill();
-    g.x = -size/2;
-    g.y = -size/2;
+    g.x = 0;
+    g.y = 0;
 
     const sprite = new PIXI.Container();
     sprite.addChild(g);
-    //sprite.position.set(x - size / 2, y - size / 2);
     sprite.rotation = 0;
     sprite.cacheAsBitmap = true;
     this.addChild(sprite);
-  
+
+    this.objects.push({ sprite: sprite, body });
+  }
+
+  createBox(x, y, size, color) {
+    const body = this.world.createBody().setDynamic();
+    const msize = pxm(size);
+    body.setPosition(Vec2(pxm(x), pxm(y)));
+    body.createFixture(Box(msize, msize), {
+      density: 10,
+      restitution: 0,
+      //position: Vec2(0, 0)
+    });
+
+    const g = new PIXI.Graphics();
+    g.beginFill(color);
+    g.lineStyle(1, 0xffffff, 1);
+    g.drawRect(0, 0, size, size);
+    g.endFill();
+    g.x = -size / 2;
+    g.y = -size / 2;
+
+    const sprite = new PIXI.Container();
+    sprite.addChild(g);
+    sprite.rotation = 0;
+    sprite.cacheAsBitmap = true;
+    this.addChild(sprite);
+
     this.objects.push({ sprite: sprite, body });
   }
 
