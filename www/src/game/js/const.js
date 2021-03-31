@@ -27,6 +27,6 @@ export function mpx(m, pscale = 60) {
   return m * pscale;
 }
 
-export function pxm(p, pscale = 60) {
+export function pxm(p, pscale =  60) {
   return p / pscale;
 }
