@@ -3,7 +3,7 @@ import GameMap from './game_map.js'
 import {colors, VERTICAL_SQUARES_COUNT, HORIZONTAL_SQUARES_COUNT} from './const.js'
 
 const BORDER_COLOR = 0x000000;
-const BORDER_WIDTH = 2;
+const BORDER_WIDTH = 1;
 const FIELD_BACKGROUND_COLOR = 0x272d37;
 
 export default class GameField extends PIXI.Container {
@@ -25,7 +25,7 @@ export default class GameField extends PIXI.Container {
         let graphics = new PIXI.Graphics();
         graphics.beginFill(FIELD_BACKGROUND_COLOR);
         graphics.lineStyle(BORDER_WIDTH, BORDER_COLOR, 1);
-        graphics.drawRect(0, 0, width + 2 * BORDER_WIDTH, height + 2 * BORDER_WIDTH);
+        graphics.drawRect(0, 0, width, height);
         graphics.endFill();
         background.addChild(graphics);
         background.cacheAsBitmap = true;

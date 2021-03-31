@@ -3,10 +3,10 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
+  mode: "development",
   entry: {
     web: "./www/src/web/index.js",
-    mobile: "./www/src/mobile/index.js",
-    phaser: "./www/src/phaser/index.ts",
+    mobile: "./www/src/mobile/index.js"
   },
   output: {
     path: path.resolve("./www/build"),
@@ -43,7 +43,7 @@ module.exports = {
     noParse: /\.min\.js/,
   },
   resolve: {
-    extensions: [ '.ts', '.tsx', '.js' ]
+    extensions: [ '.ts', '.tsx', '.js' ], 
   },
   devtool: "source-map",
   target: "web",
@@ -67,5 +67,8 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-  ],
+    new webpack.ProvidePlugin({
+      PIXI: 'pixi.js'
+    })
+  ]
 };

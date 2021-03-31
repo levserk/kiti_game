@@ -11,8 +11,9 @@
   "author": "lev",
   "license": "ISC",
   "dependencies": {
-    "phaser": "^3.53.1",
-    "pixi.js": "^4.4.3",
+    "matter-js": "^0.16.1",
+    "pixi.js": "^6.0.0",
+    "planck-js": "^0.3.28",
     "tween.js": "^16.6.0",
     "webpack": "^5.26.2"
   },

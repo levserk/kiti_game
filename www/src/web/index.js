@@ -6,10 +6,11 @@ const init = () => {
 
 init();
 
-
+/*
 if (module.hot) {
     module.hot.accept(['../game/js/pixi_app.js'], () => {
-        document.body.removeChild(pixiApp.view);
+        document.body.removeChild(pixiApp.app.view);
         init();
     });
 }
+*/
