@@ -1,7 +1,7 @@
 const PIXI = require('pixi.js');
 const TWEEN = require('tween.js');
 
-import {colors, VERTICAL_SQUARES_COUNT, HORIZONTAL_SQUARES_COUNT} from './const.js'
+import {HORIZONTAL_SQUARES_COUNT, VERTICAL_SQUARES_COUNT, colors} from './const.js'
 import GameField from './game_field'
 import Particles from './particles/particles';
 
