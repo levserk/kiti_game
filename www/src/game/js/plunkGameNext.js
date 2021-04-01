@@ -8,7 +8,7 @@ import {
   mpx,
 } from "./const";
 import planck from "planck-js";
-const { Vec2,Box, World, Edge, Circle, Polygon } = planck;
+const { Vec2, Box, World, Edge, Circle, Polygon } = planck;
 
 const PIXI = require("pixi.js");
 
@@ -20,7 +20,7 @@ export default class Game extends PIXI.Container {
     this.resources = resources;
     this.options = Object.assign({}, defaultOptions, options);
     this.size = calcSquareSize(this.options.width, this.options.height);
-    
+
     this.objects = [];
     this.world = World(Vec2(0, 9.8), true);
     this.addGameField();
@@ -45,4 +45,22 @@ export default class Game extends PIXI.Container {
       sprite.rotation = body.getAngle();
     });
   }
+
+  initWorld() {
+    const groundBody = createBody(this.world, Edge(Vec2(-40, 0), Vec2(40, 0)));
+    const groundImage = new PIXI.Container();
+    const g = new PIXI.Graphics();
+    
+  }
 }
+
+const createBody = (world, shape, type = "static", position = Vec2(0, 0)) => {
+  const body = world.createBody({
+    type,
+    position,
+  });
+  body.createFixture(shape, {
+    density: 1.0,
+    friction: 0.3,
+  });
+};
