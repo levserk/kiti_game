@@ -30,3 +30,7 @@ export function mpx(m, pscale = 60) {
 export function pxm(p, pscale =  60) {
   return p / pscale;
 }
+
+export function calcScale(ww, wh, sw, sh) {
+  return Math.min(sw / ww, sh / wh);
+}

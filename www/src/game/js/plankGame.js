@@ -1,40 +1,49 @@
 import planck from "planck-js";
 
-import {
-  calcFieldSize,
-  calcSquareSize,
-  colors,
-  defaultOptions,
-  mpx,
-  pxm
-} from "./const";
-import GameField from "./game_field";
+import { calcScale, calcSquareSize, defaultOptions } from "./const";
 
 const { Vec2, Box, World, Edge, Circle, Polygon } = planck;
 
 const PIXI = require("pixi.js");
 
 const metersPerPixel = 0.01;
-const scale = 1 / metersPerPixel;
+let scale = 1 / metersPerPixel;
+
+const worldWidth = 7;
+const worldHeight = 30;
 
 export default class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
     super();
 
+    this.interactive = true;
     this.renderer = renderer;
     this.resources = resources;
     this.options = Object.assign({}, defaultOptions, options);
     this.size = calcSquareSize(this.options.width, this.options.height);
 
+    scale = calcScale(
+      worldWidth,
+      worldHeight,
+      this.options.width,
+      this.options.height
+    );
+
     this.objects = [];
     this.world = World(Vec2(0, 9.8), true);
     this.handleKeyPress();
-    this.position.set(this.options.width / 2, this.options.height / 2);
+    this.position.set(this.options.width / 2, this.options.height);
     this.initWorld();
+    this.on('pointerdown', this.onPointerDown);
+  }
+
+  onPointerDown(e) {
+    let point = e.data.getLocalPosition(this);
+    console.log(point);
   }
 
   handleKeyPress() {
-    window.onkeydown = e => {
+    window.onkeydown = (e) => {
       console.log(e.keyCode);
       if (e && e.keyCode === 49) {
       }
@@ -83,7 +92,6 @@ export default class Game extends PIXI.Container {
     box = createCircle(this.world, 0.1, -11, 0.2);
     this.addChild(box.sprite);
     this.objects.push(box);
-    
 
     box = createPolygonBox(this.world, 0, -1, 0.1);
     this.addChild(box.sprite);
@@ -95,7 +103,7 @@ export default class Game extends PIXI.Container {
   }
 }
 
-const createGround = world => {
+const createGround = (world) => {
   const body = createBody(world, Edge(Vec2(-40, 0), Vec2(40, 0)));
   const sprite = new PIXI.Container();
   const g = new PIXI.Graphics();
@@ -107,7 +115,7 @@ const createGround = world => {
 
   return {
     body,
-    sprite
+    sprite,
   };
 };
 
@@ -136,7 +144,7 @@ const createBox = (world, x, y, size) => {
 
   return {
     body,
-    sprite
+    sprite,
   };
 };
 
@@ -157,7 +165,7 @@ const createCircle = (world, x, y, size) => {
   sprite.addChild(g);
   return {
     body,
-    sprite
+    sprite,
   };
 };
 
@@ -168,7 +176,7 @@ const createPolygonBox = (world, x, y, size) => {
       Vec2(-1.0 * size, 1.0 * size),
       Vec2(1.0 * size, 1.0 * size),
       Vec2(1.0 * size, -1.0 * size),
-      Vec2(-1.0 * size, -1.0 * size)
+      Vec2(-1.0 * size, -1.0 * size),
     ]),
     "dynamic",
     Vec2(x, y),
@@ -182,14 +190,14 @@ const createPolygonBox = (world, x, y, size) => {
     new PIXI.Point(-1 * size * scale, 1 * size * scale),
     new PIXI.Point(1 * size * scale, 1 * size * scale),
     new PIXI.Point(1 * size * scale, -1 * size * scale),
-    new PIXI.Point(-1 * size * scale, -1 * size * scale)
+    new PIXI.Point(-1 * size * scale, -1 * size * scale),
   ]);
   g.endFill();
   g.cacheAsBitmap = true;
   sprite.addChild(g);
   return {
     body,
-    sprite
+    sprite,
   };
 };
 const createPolygonTriangle = (world, x, y, size) => {
@@ -198,7 +206,7 @@ const createPolygonTriangle = (world, x, y, size) => {
     Polygon([
       Vec2(-1.0 * size, 0 * size),
       Vec2(0 * size, 1.0 * size),
-      Vec2(1.0 * size, 0 * size)
+      Vec2(1.0 * size, 0 * size),
     ]),
     "dynamic",
     Vec2(x, y),
@@ -218,7 +226,7 @@ const createPolygonTriangle = (world, x, y, size) => {
   sprite.addChild(g);
   return {
     body,
-    sprite
+    sprite,
   };
 };
 
@@ -232,11 +240,11 @@ const createBody = (
   const body = world.createBody({
     type,
     position,
-    angle
+    angle,
   });
   body.createFixture(shape, {
     density: 1.0,
-    friction: 0.3
+    friction: 0.3,
   });
 
   return body;
