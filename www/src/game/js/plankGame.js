@@ -9,8 +9,12 @@ const PIXI = require("pixi.js");
 const metersPerPixel = 0.01;
 let scale = 1 / metersPerPixel;
 
+const PointToVec2 = p => Vec2(p.x / scale, p.y / scale);
+
 const worldWidth = 7;
-const worldHeight = 30;
+const worldHeight = 15;
+
+const shapes =  ["box", "circle", "triangle"];
 
 export default class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
@@ -20,7 +24,6 @@ export default class Game extends PIXI.Container {
     this.renderer = renderer;
     this.resources = resources;
     this.options = Object.assign({}, defaultOptions, options);
-    this.size = calcSquareSize(this.options.width, this.options.height);
 
     scale = calcScale(
       worldWidth,
@@ -33,17 +36,37 @@ export default class Game extends PIXI.Container {
     this.world = World(Vec2(0, 9.8), true);
     this.handleKeyPress();
     this.position.set(this.options.width / 2, this.options.height);
+
+    this.addBackground();
     this.initWorld();
-    this.on('pointerdown', this.onPointerDown);
+
+    this.on("pointerdown", this.onPointerDown);
+  }
+
+  addBackground() {
+    const g = new PIXI.Graphics();
+    g.beginFill(0x000000, 1);
+    g.lineStyle(1, 0x000000, 1);
+    g.drawRect(
+      (-worldWidth / 2) * scale,
+      -worldHeight * scale,
+      worldWidth * scale,
+      worldHeight * scale
+    );
+    g.endFill();
+    g.cacheAsBitmap = true;
+    this.addChild(g);
   }
 
   onPointerDown(e) {
     let point = e.data.getLocalPosition(this);
-    console.log(point);
+    console.log(point, PointToVec2(point));
+    const pos = PointToVec2(point);
+    this.createPrimitive(pos.x, pos.y, Math.random() * 1 + 0.5, shapes[Math.floor(Math.random() * shapes.length)] );
   }
 
   handleKeyPress() {
-    window.onkeydown = (e) => {
+    window.onkeydown = e => {
       console.log(e.keyCode);
       if (e && e.keyCode === 49) {
       }
@@ -64,46 +87,40 @@ export default class Game extends PIXI.Container {
   initWorld() {
     const ground = createGround(this.world);
     this.addChild(ground.sprite);
-    let box;
-    box = createBox(this.world, 2, -1, 1);
-    this.addChild(box.sprite);
-    this.objects.push(box);
 
-    box = createBox(this.world, -2, -1, 1);
-    this.addChild(box.sprite);
-    this.objects.push(box);
+    this.createPrimitive(2, -1, 1, "box");
+    this.createPrimitive(-2, -1, 1, "box");
+    this.createPrimitive(0, -3, 0.2, "box");
+    this.createPrimitive(0.0, -10, 0.1, "circle");
+    this.createPrimitive(0.1, -11, 0.2, "circle");
+    this.createPrimitive(0, -1, 0.15, "polygonbox");
+    this.createPrimitive(-1, -1, 0.3, "triangle");
+  }
 
-    box = createBox(this.world, 0, -3, 0.2);
-    this.addChild(box.sprite);
-    this.objects.push(box);
+  createPrimitive(x, y, size, type = "box") {
+    let primitive;
 
-    box = createBox(this.world, -0.1, -2, 0.2);
-    this.addChild(box.sprite);
-    this.objects.push(box);
+    switch (type) {
+      case "box":
+        primitive = createBox(this.world, x, y, size);
+        break;
+      case "polygonbox":
+        primitive = createPolygonBox(this.world, x, y, size);
+        break;
+      case "circle":
+        primitive = createCircle(this.world, x, y, size);
+        break;
+      case "triangle":
+        primitive = createPolygonTriangle(this.world, x, y, size);
+        break;
+    }
 
-    box = createBox(this.world, 0.1, -1, 0.2);
-    this.addChild(box.sprite);
-    this.objects.push(box);
-
-    box = createCircle(this.world, 0.0, -10, 0.1);
-    this.addChild(box.sprite);
-    this.objects.push(box);
-
-    box = createCircle(this.world, 0.1, -11, 0.2);
-    this.addChild(box.sprite);
-    this.objects.push(box);
-
-    box = createPolygonBox(this.world, 0, -1, 0.1);
-    this.addChild(box.sprite);
-    this.objects.push(box);
-
-    box = createPolygonTriangle(this.world, -1, -1, 0.3);
-    this.addChild(box.sprite);
-    this.objects.push(box);
+    this.addChild(primitive.sprite);
+    this.objects.push(primitive);
   }
 }
 
-const createGround = (world) => {
+const createGround = world => {
   const body = createBody(world, Edge(Vec2(-40, 0), Vec2(40, 0)));
   const sprite = new PIXI.Container();
   const g = new PIXI.Graphics();
@@ -115,7 +132,7 @@ const createGround = (world) => {
 
   return {
     body,
-    sprite,
+    sprite
   };
 };
 
@@ -144,7 +161,7 @@ const createBox = (world, x, y, size) => {
 
   return {
     body,
-    sprite,
+    sprite
   };
 };
 
@@ -165,7 +182,7 @@ const createCircle = (world, x, y, size) => {
   sprite.addChild(g);
   return {
     body,
-    sprite,
+    sprite
   };
 };
 
@@ -176,7 +193,7 @@ const createPolygonBox = (world, x, y, size) => {
       Vec2(-1.0 * size, 1.0 * size),
       Vec2(1.0 * size, 1.0 * size),
       Vec2(1.0 * size, -1.0 * size),
-      Vec2(-1.0 * size, -1.0 * size),
+      Vec2(-1.0 * size, -1.0 * size)
     ]),
     "dynamic",
     Vec2(x, y),
@@ -190,14 +207,14 @@ const createPolygonBox = (world, x, y, size) => {
     new PIXI.Point(-1 * size * scale, 1 * size * scale),
     new PIXI.Point(1 * size * scale, 1 * size * scale),
     new PIXI.Point(1 * size * scale, -1 * size * scale),
-    new PIXI.Point(-1 * size * scale, -1 * size * scale),
+    new PIXI.Point(-1 * size * scale, -1 * size * scale)
   ]);
   g.endFill();
   g.cacheAsBitmap = true;
   sprite.addChild(g);
   return {
     body,
-    sprite,
+    sprite
   };
 };
 const createPolygonTriangle = (world, x, y, size) => {
@@ -206,7 +223,7 @@ const createPolygonTriangle = (world, x, y, size) => {
     Polygon([
       Vec2(-1.0 * size, 0 * size),
       Vec2(0 * size, 1.0 * size),
-      Vec2(1.0 * size, 0 * size),
+      Vec2(1.0 * size, 0 * size)
     ]),
     "dynamic",
     Vec2(x, y),
@@ -219,14 +236,14 @@ const createPolygonTriangle = (world, x, y, size) => {
   g.drawPolygon([
     new PIXI.Point(-1 * size * scale, 0 * size * scale),
     new PIXI.Point(0 * size * scale, 1 * size * scale),
-    new PIXI.Point(1 * size * scale, 0 * size * scale),
+    new PIXI.Point(1 * size * scale, 0 * size * scale)
   ]);
   g.endFill();
   g.cacheAsBitmap = true;
   sprite.addChild(g);
   return {
     body,
-    sprite,
+    sprite
   };
 };
 
@@ -240,11 +257,11 @@ const createBody = (
   const body = world.createBody({
     type,
     position,
-    angle,
+    angle
   });
   body.createFixture(shape, {
     density: 1.0,
-    friction: 0.3,
+    friction: 0.3
   });
 
   return body;
