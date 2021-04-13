@@ -1,28 +1,93 @@
-const app = new PIXI.Application();
+const app = new PIXI.Application({ antialias: true });
 document.body.appendChild(app.view);
 
-const graphics = new PIXI.Graphics();
-graphics.lineStyle(2, 0xfeeb77, 1);
-graphics.beginFill(0x650a5a, 1);
-graphics.drawCircle(250, 250, 50);
-graphics.endFill();
+const graphics = createGraphics();
+const mesh = createMesh(graphics);
 
-const texture2 = app.renderer.generateTexture(graphics);
+graphics.x = 10;
+graphics.y = 10;
+app.stage.addChild(graphics);
 
-const triangle = new PIXI.SimpleMesh(
-  texture2,
-  [0, 0, 100, 0, 100, 100],
-  [0, 0, 1, 0, 1, 1],
-  [0, 1, 2]
-);
-console.log(triangle.vertices);
-triangle.position.set(400, 300);
+mesh.y = 200;
+mesh.x = 200;
+app.stage.addChild(mesh);
 
-app.stage.addChild(triangle);
+function createGraphics() {
+  const graphics = new PIXI.Graphics();
+  graphics.lineStyle(1, 0xfeeb77, 1);
+  graphics.beginFill(0x650a5a, 1);
+  graphics.drawPolygon([
+    new PIXI.Point(0, 0),
+    new PIXI.Point(10, 10),
+    new PIXI.Point(20, 0),
+  ]);
+  graphics.endFill();
 
-let c = 0;
-app.ticker.add((delta) => {
-  c = c > 20 ? 0 : c + 1;
-  triangle.vertices[2] = 100 - c;
-  triangle.vertices[3] = 0 + c;
-});
+  graphics.beginFill(0x320a5a, 1);
+  graphics.drawPolygon([
+    new PIXI.Point(0, 20),
+    new PIXI.Point(10, 10),
+    new PIXI.Point(20, 20),
+  ]);
+  graphics.endFill();
+
+  graphics.beginFill(0x90525a, 1);
+  graphics.drawPolygon([
+    new PIXI.Point(0, 0),
+    new PIXI.Point(10, 10),
+    new PIXI.Point(0, 20),
+  ]);
+  graphics.endFill();
+
+  graphics.beginFill(0x12925a, 1);
+  graphics.drawPolygon([
+    new PIXI.Point(20, 0),
+    new PIXI.Point(10, 10),
+    new PIXI.Point(20, 20),
+  ]);
+  graphics.endFill();
+
+  return graphics;
+}
+
+function createMesh(graphics) {
+  const texture = app.renderer.generateTexture(graphics);
+
+  // prettier-ignore
+  const triangle = new PIXI.SimpleMesh(
+  texture,
+  [
+    0, 0, 
+    100, 0, 
+    100, -100,
+    0, -100,
+    -100, -100,
+    -100, 0,
+    -100, 100,
+    0, 100,
+    100, 100
+  ],
+  [
+   0.5, 0.5, 
+   1,   0.5, 
+   1,   0,
+   0.5, 0,
+   0,   0,
+   0,  	0.5,
+   0,   1,
+   0.5, 1,
+   1,   1 
+  ],
+  [
+    0, 1, 2,
+    0, 2, 3,
+    0, 3, 4,
+    0, 4, 5,
+    0, 5, 6,
+    0, 6, 7,
+    0, 7, 8,
+    0, 8, 1
+  ]
+ );
+  return triangle;
+}
