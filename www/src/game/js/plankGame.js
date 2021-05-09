@@ -1,8 +1,14 @@
 import planck from "planck-js";
+import { Box } from "./classes/Box";
+import { Circle } from "./classes/Circle";
+import { Ground } from "./classes/Ground";
+import { SoftBody } from "./classes/SoftBody";
+import { SoftBodyMesh } from "./classes/SoftBodyMesh";
+import { Triangle } from "./classes/Triangle";
 
-import { calcScale, calcSquareSize, defaultOptions } from "./const";
+import { calcScale, defaultOptions } from "./const";
 
-const { Vec2, Box, World, Edge, Circle, Polygon, DistanceJoint } = planck;
+const { Vec2, World } = planck;
 
 const PIXI = require("pixi.js");
 
@@ -13,8 +19,6 @@ const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
 
 const worldWidth = 7;
 const worldHeight = 15;
-
-const shapes = ["box", "circle", "triangle"];
 
 export default class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
@@ -62,13 +66,7 @@ export default class Game extends PIXI.Container {
     let point = e.data.getLocalPosition(this);
     console.log(point, PointToVec2(point));
     const pos = PointToVec2(point);
-    this.createSoftBall(pos.x, pos.y, Math.random() / 4 + 0.4);
-    /*this.createPrimitive(
-      pos.x,
-      pos.y,
-      Math.random() * 1 + 0.5,
-      shapes[Math.floor(Math.random() * shapes.length)]
-    );*/
+    this.createPrimitive(pos.x, pos.y, Math.random() / 4 + 0.4, "softBody");
   }
 
   handleKeyPress() {
@@ -81,38 +79,19 @@ export default class Game extends PIXI.Container {
 
   update(delta) {
     this.world.step(1 / 60);
-    this.objects.forEach(({ sprite, body }) => {
-      const pos = body.getPosition();
-      // Make all pixi sprites follow the position and rotation of their body.
-
-      sprite.position.set(pos.x * scale, pos.y * scale);
-      sprite.rotation = body.getAngle();
+    this.objects.forEach((primitive) => {
+      primitive.update();
     });
   }
 
   initWorld() {
-    const ground = createGround(this.world);
-    this.addChild(ground.sprite);
-
+    this.createPrimitive(0, 0, 80, "ground");
     this.createPrimitive(2, -1, 1, "box");
     this.createPrimitive(-2, -1, 1, "box");
     this.createPrimitive(0, -3, 0.2, "box");
-    this.createPrimitive(0, -1, 0.15, "polygonbox");
+    this.createPrimitive(1, -3, 0.5, "circle");
     this.createPrimitive(-1, -1, 0.3, "triangle");
-
-    let objs = createSoftBall(this.world, 0, -10, 0.5);
-    objs.forEach((obj) => {
-      this.addChild(obj.sprite);
-      this.objects.push(obj);
-    });
-  }
-
-  createSoftBall(x, y, size) {
-    let objs = createSoftBall(this.world, x, y, size);
-    objs.forEach((obj) => {
-      this.addChild(obj.sprite);
-      this.objects.push(obj);
-    });
+    this.createPrimitive(0, -10, 0.5, "softBodyMesh");
   }
 
   createPrimitive(x, y, size, type = "box") {
@@ -120,205 +99,32 @@ export default class Game extends PIXI.Container {
 
     switch (type) {
       case "box":
-        primitive = createBox(this.world, x, y, size);
+        primitive = new Box(this.world, { x, y, size, scale });
         break;
-      case "polygonbox":
-        primitive = createPolygonBox(this.world, x, y, size);
+      case "ground":
+        primitive = new Ground(this.world, { x, y, size, scale });
         break;
       case "circle":
-        primitive = createCircle(this.world, x, y, size);
+        primitive = new Circle(this.world, { x, y, size, scale });
         break;
       case "triangle":
-        primitive = createPolygonTriangle(this.world, x, y, size);
+        primitive = new Triangle(this.world, { x, y, size, scale });
+        break;
+      case "softBody":
+        primitive = new SoftBody(this.world, { x, y, size, scale });
+        break;
+      case "softBodyMesh":
+        primitive = new SoftBodyMesh(this.world, {
+          x,
+          y,
+          size,
+          scale,
+          renderer: this.renderer,
+        });
         break;
     }
 
-    this.addChild(primitive.sprite);
+    this.addChild(...primitive.getChildren());
     this.objects.push(primitive);
   }
 }
-
-const createGround = (world) => {
-  const body = createBody(world, Edge(Vec2(-40, 0), Vec2(40, 0)));
-  const sprite = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  g.beginFill(0xffffff, 1);
-  g.drawRect(-40 * scale, 0, 2 * 40 * scale, 1);
-  g.endFill();
-  g.cacheAsBitmap = true;
-  sprite.addChild(g);
-
-  return {
-    body,
-    sprite,
-  };
-};
-
-const createBox = (world, x, y, size) => {
-  const body = createBody(
-    world,
-    Box(size / 2, size / 2),
-    "dynamic",
-    Vec2(x, y)
-  );
-  const sprite = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  //g.beginFill(0xffffff, 1);
-  g.lineStyle(1, 0xffffff, 1);
-  g.drawRect(
-    (-size / 2) * scale,
-    (-size / 2) * scale,
-    size * scale,
-    size * scale
-  );
-  g.endFill();
-  g.cacheAsBitmap = true;
-  sprite.addChild(g);
-  //sprite.pivot.x = -(size * scale) / 2;
-  //sprite.pivot.y = -(size * scale) / 2;
-
-  return {
-    body,
-    sprite,
-  };
-};
-
-const createCircle = (world, x, y, size) => {
-  const body = createBody(
-    world,
-    Circle(Vec2(0, 0), size),
-    "dynamic",
-    Vec2(x, y)
-  );
-  const sprite = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  //g.beginFill(0xffffff, 1);
-  g.lineStyle(1, 0xffffff, 1);
-  g.drawCircle(0, 0, size * scale);
-  g.endFill();
-  g.cacheAsBitmap = true;
-  sprite.addChild(g);
-  return {
-    body,
-    sprite,
-  };
-};
-
-const createPolygonBox = (world, x, y, size) => {
-  const body = createBody(
-    world,
-    Polygon([
-      Vec2(-1.0 * size, 1.0 * size),
-      Vec2(1.0 * size, 1.0 * size),
-      Vec2(1.0 * size, -1.0 * size),
-      Vec2(-1.0 * size, -1.0 * size),
-    ]),
-    "dynamic",
-    Vec2(x, y),
-    Math.PI / 4 + 0.2
-  );
-  const sprite = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  //g.beginFill(0xffffff, 1);
-  g.lineStyle(1, 0xffffff, 1);
-  g.drawPolygon([
-    new PIXI.Point(-1 * size * scale, 1 * size * scale),
-    new PIXI.Point(1 * size * scale, 1 * size * scale),
-    new PIXI.Point(1 * size * scale, -1 * size * scale),
-    new PIXI.Point(-1 * size * scale, -1 * size * scale),
-  ]);
-  g.endFill();
-  g.cacheAsBitmap = true;
-  sprite.addChild(g);
-  return {
-    body,
-    sprite,
-  };
-};
-const createPolygonTriangle = (world, x, y, size) => {
-  const body = createBody(
-    world,
-    Polygon([
-      Vec2(-1.0 * size, 0 * size),
-      Vec2(0 * size, 1.0 * size),
-      Vec2(1.0 * size, 0 * size),
-    ]),
-    "dynamic",
-    Vec2(x, y),
-    Math.PI + 0.2
-  );
-  const sprite = new PIXI.Container();
-  const g = new PIXI.Graphics();
-  //g.beginFill(0xffffff, 1);
-  g.lineStyle(1, 0xffffff, 1);
-  g.drawPolygon([
-    new PIXI.Point(-1 * size * scale, 0 * size * scale),
-    new PIXI.Point(0 * size * scale, 1 * size * scale),
-    new PIXI.Point(1 * size * scale, 0 * size * scale),
-  ]);
-  g.endFill();
-  g.cacheAsBitmap = true;
-  sprite.addChild(g);
-  return {
-    body,
-    sprite,
-  };
-};
-
-const createSoftBall = (world, x, y, size) => {
-  const r = size / 3;
-  const n = Math.floor((size * Math.PI) / r / 1);
-  let circles = [];
-
-  let center = createCircle(world, x, y, r*2);
-
-  for (let i = 0; i < n; i++) {
-    let angle = (i * 2 * Math.PI) / n;
-    let dx = Math.cos(angle) * size;
-    let dy = Math.sin(angle) * size;
-
-    circles[i] = createCircle(world, x + dx, y + dy, r);
-    circles[i].body.setFixedRotation(true);
-    createJoint(world, circles[i].body, center.body);
-    if (i > 0) {
-      createJoint(world, circles[i].body, circles[i - 1].body);
-    }
-    if (i === n - 1) {
-      createJoint(world, circles[i].body, circles[0].body);
-    }
-  }
-  return circles;
-};
-
-function createJoint(world, a, b) {
-  return world.createJoint(
-    DistanceJoint({
-      bodyA: a,
-      localAnchorA: Vec2(0, 0),
-      bodyB: b,
-      localAnchorB: Vec2(0, 0),
-      frequencyHz: 12,
-      dampingRatio: 0.5,
-    })
-  );
-}
-
-const createBody = (
-  world,
-  shape,
-  type = "static",
-  position = Vec2(0, 0),
-  angle = 0
-) => {
-  const body = world.createBody({
-    type,
-    position,
-    angle,
-  });
-  body.createFixture(shape, {
-    density: 1.0,
-    friction: 0.3,
-  });
-
-  return body;
-};
