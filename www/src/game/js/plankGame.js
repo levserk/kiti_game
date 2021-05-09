@@ -20,6 +20,8 @@ const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
 const worldWidth = 7;
 const worldHeight = 15;
 
+const figures = ["box", "triangle", "circle", "softBody", "softBodyMesh"];
+
 export default class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
     super();
@@ -66,13 +68,24 @@ export default class Game extends PIXI.Container {
     let point = e.data.getLocalPosition(this);
     console.log(point, PointToVec2(point));
     const pos = PointToVec2(point);
-    this.createPrimitive(pos.x, pos.y, Math.random() / 4 + 0.4, "softBody");
+    this.createPrimitive(
+      pos.x,
+      pos.y,
+      Math.random() / 4 + 0.4,
+      "softBodyMesh"
+    );
   }
 
   handleKeyPress() {
     window.onkeydown = (e) => {
       console.log(e.keyCode);
-      if (e && e.keyCode === 49) {
+      if (e && e.keyCode > 47) {
+        this.createPrimitive(
+          0 + Math.random(3) -1.5,
+          -10 + Math.random(3) -1.5,
+          Math.random() / 4 + 0.4,
+          figures[e.keyCode - 48]
+        );
       }
     };
   }

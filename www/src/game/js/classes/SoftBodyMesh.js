@@ -10,11 +10,11 @@ export class SoftBodyMesh extends Primitive {
     const scale = this.scale;
     this.size = size;
     const texture = this.createTexture();
-    const r = size / 3;
-    const n = Math.floor((size * Math.PI) / r / 1);
+    const r = size / 4;
+    const n = Math.floor((size * Math.PI) / r / 1.2);
 
     let circles = [];
-    let uvs = [0.5, 0.5/*, 1, 0.5*/];
+    let uvs = [0.5, 0.5 /*, 1, 0.5*/];
     let indices = [];
 
     let center = this.createBody(
@@ -25,8 +25,8 @@ export class SoftBodyMesh extends Primitive {
 
     for (let i = 0; i < n; i++) {
       let angle = (i * 2 * Math.PI) / n;
-      let dx = Math.cos(angle) * size;
-      let dy = Math.sin(angle) * size;
+      let dx = Math.cos(angle) * (size - r);
+      let dy = Math.sin(angle) * (size - r);
 
       circles[i] = this.createBody(
         planck.Circle(Vec2(0, 0), r),
@@ -51,7 +51,7 @@ export class SoftBodyMesh extends Primitive {
       }
     }
 
-    circles.unshift(center)
+    circles.unshift(center);
 
     indices = [...indices, 0, n, 1];
 
@@ -67,9 +67,12 @@ export class SoftBodyMesh extends Primitive {
 
   createTexture() {
     const graphics = new PIXI.Graphics();
-    graphics.lineStyle(5, 0xffffff, 1);
+    //graphics.lineStyle(5, 0xffffff, 1);
     graphics.beginFill(0xde3249, 1);
     graphics.drawCircle(0, 0, 50);
+    graphics.endFill();
+    graphics.beginFill(0x153249, 1);
+    graphics.drawCircle(0, 0, 30);
     graphics.endFill();
 
     return this.renderer.generateTexture(graphics);
@@ -79,7 +82,7 @@ export class SoftBodyMesh extends Primitive {
     const pos = this.bodies[0].getPosition();
 
     this.sprite.position.set(pos.x * this.scale, pos.y * this.scale);
-    this.sprite.rotation = this.bodies[0].getAngle();
+    //this.sprite.rotation = this.bodies[0].getAngle();
     this.sprite.vertices = this.bodiesToVertices(this.bodies);
   }
 
@@ -90,8 +93,8 @@ export class SoftBodyMesh extends Primitive {
       const x = pos.x - center.x;
       const y = pos.y - center.y;
 
-      vertices.push(x * this.scale);
-      vertices.push(y * this.scale);
+      vertices.push(x * this.scale * 1.3);
+      vertices.push(y * this.scale * 1.3);
       return vertices;
     }, []);
   }

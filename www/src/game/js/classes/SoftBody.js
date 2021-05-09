@@ -8,8 +8,8 @@ const { Vec2 } = planck;
 export class SoftBody extends Primitive {
   init(x, y, size) {
     const scale = this.scale;
-    const r = size / 3;
-    const n = Math.floor((size * Math.PI) / r / 1);
+    const r = size / 5;
+    const n = Math.floor((size * Math.PI) / r / 1.2);
     let circles = [];
 
     let center = new Circle(this.world, { x, y, size: r * 2, scale });
@@ -17,8 +17,8 @@ export class SoftBody extends Primitive {
 
     for (let i = 0; i < n; i++) {
       let angle = (i * 2 * Math.PI) / n;
-      let dx = Math.cos(angle) * size;
-      let dy = Math.sin(angle) * size;
+      let dx = Math.cos(angle) * (size - r);
+      let dy = Math.sin(angle) * (size - r);
 
       circles[i] = new Circle(this.world, {
         x: x + dx,
