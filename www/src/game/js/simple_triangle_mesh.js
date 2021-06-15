@@ -1,7 +1,7 @@
 const app = new PIXI.Application({ antialias: true });
 document.body.appendChild(app.view);
 
-const graphics = createGraphics();
+let graphics = createGraphics();
 const mesh = createMesh(graphics);
 
 graphics.x = 10;
@@ -11,6 +11,20 @@ app.stage.addChild(graphics);
 mesh.y = 200;
 mesh.x = 200;
 app.stage.addChild(mesh);
+
+graphics = new PIXI.Graphics();
+graphics.lineStyle(5, 0xffffff, 1);
+graphics.beginFill(0xde3249, 1);
+graphics.drawCircle(0, 0, 50);
+graphics.endFill();
+
+const cmesh = createCircleMesh(graphics);
+cmesh.y = 200;
+cmesh.x = 500;
+app.stage.addChild(cmesh);
+graphics.x = 100;
+graphics.y = 10;
+app.stage.addChild(graphics);
 
 function createGraphics() {
   const graphics = new PIXI.Graphics();
@@ -89,5 +103,27 @@ function createMesh(graphics) {
     0, 8, 1
   ]
  );
+  return triangle;
+}
+
+function createCircleMesh(graphics, s = 40) {
+  const texture = app.renderer.generateTexture(graphics);
+
+  let vertices = [0, 0, s / 2, 0];
+  let uvs = [0.5, 0.5, 1, 0.5];
+  let indices = [];
+  const n = 9;
+
+  for (let i = 1; i < n; i++) {
+    const angle = ((Math.PI * 2) / n) * i;
+    const dx = Math.cos(angle);
+    const dy = -Math.sin(angle);
+    uvs = [...uvs, dx * 0.5 + 0.5, dy * 0.5 + 0.5];
+    vertices = [...vertices, dx * s * 0.5, dy * s * 0.5];
+    indices = [...indices, 0, i, i + 1];
+  }
+  indices = [...indices, 0, n, 1];
+
+  const triangle = new PIXI.SimpleMesh(texture, vertices, uvs, indices);
   return triangle;
 }
