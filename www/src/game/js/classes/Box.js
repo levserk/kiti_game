@@ -1,11 +1,12 @@
-import * as planck from "planck-js";
 import * as PIXI from "pixi.js";
+import * as planck from "planck-js";
+
 import { Primitive } from "./Primitive";
 
 const { Vec2 } = planck;
 
 export class Box extends Primitive {
-  init(x, y, size) {
+  init(x, y, {size}) {
     const body = this.createBody(
       planck.Box(size / 2, size / 2),
       "dynamic",

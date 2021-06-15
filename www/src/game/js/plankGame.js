@@ -1,11 +1,11 @@
 import planck from "planck-js";
+
 import { Box } from "./classes/Box";
 import { Circle } from "./classes/Circle";
 import { Ground } from "./classes/Ground";
 import { SoftBody } from "./classes/SoftBody";
 import { SoftBodyMesh } from "./classes/SoftBodyMesh";
 import { Triangle } from "./classes/Triangle";
-
 import { calcScale, defaultOptions } from "./const";
 
 const { Vec2, World } = planck;
@@ -15,7 +15,7 @@ const PIXI = require("pixi.js");
 const metersPerPixel = 0.01;
 let scale = 1 / metersPerPixel;
 
-const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
+const PointToVec2 = p => Vec2(p.x / scale, p.y / scale);
 
 const worldWidth = 7;
 const worldHeight = 15;
@@ -68,21 +68,16 @@ export default class Game extends PIXI.Container {
     let point = e.data.getLocalPosition(this);
     console.log(point, PointToVec2(point));
     const pos = PointToVec2(point);
-    this.createPrimitive(
-      pos.x,
-      pos.y,
-      Math.random() / 4 + 0.4,
-      "softBodyMesh"
-    );
+    this.createPrimitive(pos.x, pos.y, Math.random() / 4 + 0.4, "softBodyMesh");
   }
 
   handleKeyPress() {
-    window.onkeydown = (e) => {
+    window.onkeydown = e => {
       console.log(e.keyCode);
       if (e && e.keyCode > 47) {
         this.createPrimitive(
-          0 + Math.random(3) -1.5,
-          -10 + Math.random(3) -1.5,
+          0 + Math.random(3) - 1.5,
+          -10 + Math.random(3) - 1.5,
           Math.random() / 4 + 0.4,
           figures[e.keyCode - 48]
         );
@@ -92,13 +87,25 @@ export default class Game extends PIXI.Container {
 
   update(delta) {
     this.world.step(1 / 60);
-    this.objects.forEach((primitive) => {
+    this.objects.forEach(primitive => {
       primitive.update();
     });
   }
 
   initWorld() {
-    this.createPrimitive(0, 0, 80, "ground");
+    this.createPrimitive(0, -0.2, 80, "ground");
+    this.createPrimitive(
+      -worldWidth / 2,
+      -worldHeight / 2,
+      worldHeight,
+      "ground_ver"
+    );
+    this.createPrimitive(
+      +worldWidth / 2,
+      -worldHeight / 2,
+      worldHeight,
+      "ground_ver"
+    );
     this.createPrimitive(2, -1, 1, "box");
     this.createPrimitive(-2, -1, 1, "box");
     this.createPrimitive(0, -3, 0.2, "box");
@@ -115,7 +122,22 @@ export default class Game extends PIXI.Container {
         primitive = new Box(this.world, { x, y, size, scale });
         break;
       case "ground":
-        primitive = new Ground(this.world, { x, y, size, scale });
+        primitive = new Ground(this.world, {
+          x,
+          y,
+          size,
+          scale,
+          type: "horizontal"
+        });
+        break;
+      case "ground_ver":
+        primitive = new Ground(this.world, {
+          x,
+          y,
+          size,
+          scale,
+          type: "vertical"
+        });
         break;
       case "circle":
         primitive = new Circle(this.world, { x, y, size, scale });
@@ -132,7 +154,7 @@ export default class Game extends PIXI.Container {
           y,
           size,
           scale,
-          renderer: this.renderer,
+          renderer: this.renderer
         });
         break;
     }

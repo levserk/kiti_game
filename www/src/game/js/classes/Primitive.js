@@ -2,14 +2,14 @@ import { DistanceJoint, Vec2 } from "planck-js";
 
 export class Primitive {
   constructor(world, options) {
-    const { size, scale, x, y, renderer } = options;
+    const { scale, x, y, renderer } = options;
     this.world = world;
     this.scale = scale;
     this.renderer = renderer;
-    this.init(x, y, size);
+    this.init(x, y, options);
   }
 
-  init(x, y, size) {
+  init(x, y, {size}) {
     this.body = null;
     this.sprite = null;
   }

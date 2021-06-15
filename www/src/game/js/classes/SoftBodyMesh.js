@@ -1,12 +1,13 @@
-import * as planck from "planck-js";
 import * as PIXI from "pixi.js";
-import { Primitive } from "./Primitive";
+import * as planck from "planck-js";
+
 import { Circle } from "./Circle";
+import { Primitive } from "./Primitive";
 
 const { Vec2 } = planck;
 
 export class SoftBodyMesh extends Primitive {
-  init(x, y, size) {
+  init(x, y, {size}) {
     const scale = this.scale;
     this.size = size;
     const texture = this.createTexture();

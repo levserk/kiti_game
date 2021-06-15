@@ -1,11 +1,12 @@
-import * as planck from "planck-js";
 import * as PIXI from "pixi.js";
+import * as planck from "planck-js";
+
 import { Primitive } from "./Primitive";
 
 const { Vec2 } = planck;
 
 export class Circle extends Primitive {
-  init(x, y, size) {
+  init(x, y, {size}) {
     const body = this.createBody(
       planck.Circle(Vec2(0, 0), size),
       "dynamic",

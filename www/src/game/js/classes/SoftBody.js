@@ -1,12 +1,13 @@
-import * as planck from "planck-js";
 import * as PIXI from "pixi.js";
-import { Primitive } from "./Primitive";
+import * as planck from "planck-js";
+
 import { Circle } from "./Circle";
+import { Primitive } from "./Primitive";
 
 const { Vec2 } = planck;
 
 export class SoftBody extends Primitive {
-  init(x, y, size) {
+  init(x, y, {size}) {
     const scale = this.scale;
     const r = size / 5;
     const n = Math.floor((size * Math.PI) / r / 1.2);
