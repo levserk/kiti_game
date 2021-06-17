@@ -62884,29 +62884,30 @@ module.exports = {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-var planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+var planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Box": () => (/* binding */ Box)
 /* harmony export */ });
-/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
 /* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
 
 
 
 
-const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_0__, 2)));
+
+const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class Box extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, size) {
+  init(x, y, {size}) {
     const body = this.createBody(
-      planck_js__WEBPACK_IMPORTED_MODULE_0__.Box(size / 2, size / 2),
+      planck_js__WEBPACK_IMPORTED_MODULE_1__.Box(size / 2, size / 2),
       "dynamic",
       Vec2(x, y)
     );
-    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Container();
-    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Graphics();
+    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
     g.lineStyle(1, 0xffffff, 1);
     g.drawRect(
       (-size / 2) * this.scale,
@@ -62933,29 +62934,30 @@ class Box extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-var planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+var planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Circle": () => (/* binding */ Circle)
 /* harmony export */ });
-/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
 /* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
 
 
 
 
-const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_0__, 2)));
+
+const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class Circle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, size) {
+  init(x, y, {size}) {
     const body = this.createBody(
-      planck_js__WEBPACK_IMPORTED_MODULE_0__.Circle(Vec2(0, 0), size),
+      planck_js__WEBPACK_IMPORTED_MODULE_1__.Circle(Vec2(0, 0), size),
       "dynamic",
       Vec2(x, y)
     );
-    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Container();
-    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Graphics();
+    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
     g.lineStyle(1, 0xffffff, 1);
     g.drawCircle(0, 0, size * this.scale);
     g.endFill();
@@ -62964,6 +62966,14 @@ class Circle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 
     this.body = body;
     this.sprite = sprite;
+  }
+
+  checkPoint(x, y) {
+    const pos = this.body.getPosition();
+    return (
+      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
+      this.options.size
+    );
   }
 }
 
@@ -62977,34 +62987,42 @@ class Circle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-var planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+var planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Ground": () => (/* binding */ Ground)
 /* harmony export */ });
-/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
 /* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
 
 
 
 
-const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_0__, 2)));
+
+const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class Ground extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, size) {
-    const body = this.createBody(
-      planck_js__WEBPACK_IMPORTED_MODULE_0__.Edge(Vec2(x - size / 2, y), Vec2(x + size / 2, y))
+  init(x, y, { size, type = "horizontal" }) {
+    const hs = type === "horizontal" ? size : 0;
+    const vs = type === "vertical" ? size : 0;
+
+    const edge = planck_js__WEBPACK_IMPORTED_MODULE_1__.Edge(
+      Vec2(x - hs / 2, y - vs / 2),
+      Vec2(x + hs / 2, y + vs / 2)
     );
 
-    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Container();
-    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Graphics();
+    const body = this.createBody(edge);
+
+    //graphics
+    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
     g.beginFill(0xffffff, 1);
     g.drawRect(
-      x - (size / 2) * this.scale,
-      y,
-      x + ((2 * size) / 2) * this.scale,
-      1
+      (x - hs / 2) * this.scale,
+      (y - vs / 2) * this.scale,
+      type === "horizontal" ? x + ((2 * hs) / 2) * this.scale : 1,
+      type === "vertical" ? y + ((2 * vs) / 2) * this.scale : 1
     );
     g.endFill();
     g.cacheAsBitmap = true;
@@ -63012,6 +63030,10 @@ class Ground extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 
     this.body = body;
     this.sprite = sprite;
+  }
+
+  checkPoint() {
+    return false;
   }
 }
 
@@ -63034,14 +63056,15 @@ __webpack_require__.r(__webpack_exports__);
 
 class Primitive {
   constructor(world, options) {
-    const { size, scale, x, y, renderer } = options;
+    const { scale, x, y, renderer } = options;
+    this.options = options;
     this.world = world;
     this.scale = scale;
     this.renderer = renderer;
-    this.init(x, y, size);
+    this.init(x, y, options);
   }
 
-  init(x, y, size) {
+  init(x, y, { size }) {
     this.body = null;
     this.sprite = null;
   }
@@ -63057,11 +63080,11 @@ class Primitive {
     const body = this.world.createBody({
       type,
       position,
-      angle,
+      angle
     });
     body.createFixture(shape, {
       density: 1.0,
-      friction: 0.3,
+      friction: 0.3
     });
 
     return body;
@@ -63079,8 +63102,20 @@ class Primitive {
         bodyB: b,
         localAnchorB: (0,planck_js__WEBPACK_IMPORTED_MODULE_0__.Vec2)(0, 0),
         frequencyHz: 12,
-        dampingRatio: 0.5,
+        dampingRatio: 0.5
       })
+    );
+  }
+
+  destroy() {
+    this.world.destroyBody(this.body);
+  }
+
+  checkPoint(x, y) {
+    const pos = this.body.getPosition();
+    return (
+      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
+      this.options.size / 2
     );
   }
 }
@@ -63095,30 +63130,31 @@ class Primitive {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-var planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+var planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "SoftBody": () => (/* binding */ SoftBody)
 /* harmony export */ });
-/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
-/* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
-/* harmony import */ var _Circle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Circle */ "./www/src/game/js/classes/Circle.js");
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
+/* harmony import */ var _Circle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Circle */ "./www/src/game/js/classes/Circle.js");
+/* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
 
 
 
 
 
-const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_0__, 2)));
 
-class SoftBody extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, size) {
+const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
+
+class SoftBody extends _Primitive__WEBPACK_IMPORTED_MODULE_3__.Primitive {
+  init(x, y, {size}) {
     const scale = this.scale;
     const r = size / 5;
     const n = Math.floor((size * Math.PI) / r / 1.2);
     let circles = [];
 
-    let center = new _Circle__WEBPACK_IMPORTED_MODULE_3__.Circle(this.world, { x, y, size: r * 2, scale });
+    let center = new _Circle__WEBPACK_IMPORTED_MODULE_2__.Circle(this.world, { x, y, size: r * 2, scale });
     circles.push(center);
 
     for (let i = 0; i < n; i++) {
@@ -63126,7 +63162,7 @@ class SoftBody extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
       let dx = Math.cos(angle) * (size - r);
       let dy = Math.sin(angle) * (size - r);
 
-      circles[i] = new _Circle__WEBPACK_IMPORTED_MODULE_3__.Circle(this.world, {
+      circles[i] = new _Circle__WEBPACK_IMPORTED_MODULE_2__.Circle(this.world, {
         x: x + dx,
         y: y + dy,
         size: r,
@@ -63167,24 +63203,25 @@ class SoftBody extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-var planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+var planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "SoftBodyMesh": () => (/* binding */ SoftBodyMesh)
 /* harmony export */ });
-/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
-/* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
-/* harmony import */ var _Circle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Circle */ "./www/src/game/js/classes/Circle.js");
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
+/* harmony import */ var _Circle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Circle */ "./www/src/game/js/classes/Circle.js");
+/* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
 
 
 
 
 
-const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_0__, 2)));
 
-class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, size) {
+const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
+
+class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_3__.Primitive {
+  init(x, y, { size }) {
     const scale = this.scale;
     this.size = size;
     const texture = this.createTexture();
@@ -63196,7 +63233,7 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     let indices = [];
 
     let center = this.createBody(
-      planck_js__WEBPACK_IMPORTED_MODULE_0__.Circle(Vec2(0, 0), r * 2),
+      planck_js__WEBPACK_IMPORTED_MODULE_1__.Circle(Vec2(0, 0), r * 2),
       "dynamic",
       Vec2(x, y)
     );
@@ -63207,7 +63244,7 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
       let dy = Math.sin(angle) * (size - r);
 
       circles[i] = this.createBody(
-        planck_js__WEBPACK_IMPORTED_MODULE_0__.Circle(Vec2(0, 0), r),
+        planck_js__WEBPACK_IMPORTED_MODULE_1__.Circle(Vec2(0, 0), r),
         "dynamic",
         Vec2(x + dx, y + dy)
       );
@@ -63237,14 +63274,14 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 
     console.log({ vertices, uvs, indices, circles, n });
 
-    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.SimpleMesh(texture, vertices, uvs, indices);
+    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.SimpleMesh(texture, vertices, uvs, indices);
 
     this.bodies = circles;
     this.sprite = sprite;
   }
 
   createTexture() {
-    const graphics = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Graphics();
+    const graphics = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
     //graphics.lineStyle(5, 0xffffff, 1);
     graphics.beginFill(0xde3249, 1);
     graphics.drawCircle(0, 0, 50);
@@ -63276,6 +63313,20 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
       return vertices;
     }, []);
   }
+
+  destroy() {
+    for (let body of this.bodies) {
+      this.world.destroyBody(body);
+    }
+  }
+
+  checkPoint(x, y) {
+    const pos = this.bodies[0].getPosition();
+    return (
+      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
+      this.options.size
+    );
+  }
 }
 
 
@@ -63288,24 +63339,25 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-var planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache;
+var planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Triangle": () => (/* binding */ Triangle)
 /* harmony export */ });
-/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
-/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
 /* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
 
 
 
 
-const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_0___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_0__, 2)));
+
+const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class Triangle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, size) {
+  init(x, y, {size}) {
     const body = this.createBody(
-      planck_js__WEBPACK_IMPORTED_MODULE_0__.Polygon([
+      planck_js__WEBPACK_IMPORTED_MODULE_1__.Polygon([
         Vec2(-1.0 * size, 0 * size),
         Vec2(0 * size, 1.0 * size),
         Vec2(1.0 * size, 0 * size),
@@ -63314,14 +63366,14 @@ class Triangle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
       Vec2(x, y),
       Math.PI + 0.2
     );
-    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Container();
-    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Graphics();
+    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+    const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
 
     g.lineStyle(1, 0xffffff, 1);
     g.drawPolygon([
-      new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Point(-1 * size * this.scale, 0 * size * this.scale),
-      new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Point(0 * size * this.scale, 1 * size * this.scale),
-      new pixi_js__WEBPACK_IMPORTED_MODULE_1__.Point(1 * size * this.scale, 0 * size * this.scale),
+      new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(-1 * size * this.scale, 0 * size * this.scale),
+      new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(0 * size * this.scale, 1 * size * this.scale),
+      new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(1 * size * this.scale, 0 * size * this.scale),
     ]);
     g.endFill();
     g.cacheAsBitmap = true;
@@ -63538,12 +63590,15 @@ const PIXI = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm
 const metersPerPixel = 0.01;
 let scale = 1 / metersPerPixel;
 
-const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
+const PointToVec2 = p => Vec2(p.x / scale, p.y / scale);
 
 const worldWidth = 7;
 const worldHeight = 15;
 
 const figures = ["box", "triangle", "circle", "softBody", "softBodyMesh"];
+
+let bomb = null;
+let bombLife = 0;
 
 class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
@@ -63591,21 +63646,35 @@ class Game extends PIXI.Container {
     let point = e.data.getLocalPosition(this);
     console.log(point, PointToVec2(point));
     const pos = PointToVec2(point);
-    this.createPrimitive(
-      pos.x,
-      pos.y,
-      Math.random() / 4 + 0.4,
-      "softBodyMesh"
-    );
+
+    for (let i in this.objects) {
+      const object = this.objects[i];
+      if (object.checkPoint(pos.x, pos.y)) {
+        console.log(object);
+        object.destroy();
+        this.removeChild(...object.getChildren());
+        this.objects.splice(i, 1);
+        bomb = new _classes_Circle__WEBPACK_IMPORTED_MODULE_2__.Circle(this.world, {
+          x: pos.x,
+          y: pos.y,
+          size: object.options.size * 1.5,
+          scale
+        });
+        bombLife = 5;
+        return;
+      }
+    }
+
+    this.createPrimitive(pos.x, pos.y, Math.random() / 4 + 0.4, "softBodyMesh");
   }
 
   handleKeyPress() {
-    window.onkeydown = (e) => {
+    window.onkeydown = e => {
       console.log(e.keyCode);
       if (e && e.keyCode > 47) {
         this.createPrimitive(
-          0 + Math.random(3) -1.5,
-          -10 + Math.random(3) -1.5,
+          0 + Math.random(3) - 1.5,
+          -10 + Math.random(3) - 1.5,
           Math.random() / 4 + 0.4,
           figures[e.keyCode - 48]
         );
@@ -63615,13 +63684,32 @@ class Game extends PIXI.Container {
 
   update(delta) {
     this.world.step(1 / 60);
-    this.objects.forEach((primitive) => {
+    this.objects.forEach(primitive => {
       primitive.update();
     });
+    if (bomb) {
+      bombLife--;
+      if (bombLife <= 0) {
+        bomb.destroy();
+        bomb = null;
+      }
+    }
   }
 
   initWorld() {
-    this.createPrimitive(0, 0, 80, "ground");
+    this.createPrimitive(0, -0.2, 80, "ground");
+    this.createPrimitive(
+      -worldWidth / 2,
+      -worldHeight / 2,
+      worldHeight,
+      "ground_ver"
+    );
+    this.createPrimitive(
+      +worldWidth / 2,
+      -worldHeight / 2,
+      worldHeight,
+      "ground_ver"
+    );
     this.createPrimitive(2, -1, 1, "box");
     this.createPrimitive(-2, -1, 1, "box");
     this.createPrimitive(0, -3, 0.2, "box");
@@ -63638,7 +63726,22 @@ class Game extends PIXI.Container {
         primitive = new _classes_Box__WEBPACK_IMPORTED_MODULE_1__.Box(this.world, { x, y, size, scale });
         break;
       case "ground":
-        primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_3__.Ground(this.world, { x, y, size, scale });
+        primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_3__.Ground(this.world, {
+          x,
+          y,
+          size,
+          scale,
+          type: "horizontal"
+        });
+        break;
+      case "ground_ver":
+        primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_3__.Ground(this.world, {
+          x,
+          y,
+          size,
+          scale,
+          type: "vertical"
+        });
         break;
       case "circle":
         primitive = new _classes_Circle__WEBPACK_IMPORTED_MODULE_2__.Circle(this.world, { x, y, size, scale });
@@ -63655,7 +63758,7 @@ class Game extends PIXI.Container {
           y,
           size,
           scale,
-          renderer: this.renderer,
+          renderer: this.renderer
         });
         break;
     }
@@ -63833,7 +63936,7 @@ if (module.hot) {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("a6213f16cd031e10ecc3")
+/******/ 		__webpack_require__.h = () => ("18bae201bb41d9023352")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
