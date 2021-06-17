@@ -22,6 +22,9 @@ const worldHeight = 15;
 
 const figures = ["box", "triangle", "circle", "softBody", "softBodyMesh"];
 
+let bomb = null;
+let bombLife = 0;
+
 export default class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
     super();
@@ -75,7 +78,14 @@ export default class Game extends PIXI.Container {
         console.log(object);
         object.destroy();
         this.removeChild(...object.getChildren());
-        this.objects.splice(i,1);
+        this.objects.splice(i, 1);
+        bomb = new Circle(this.world, {
+          x: pos.x,
+          y: pos.y,
+          size: object.options.size * 1.5,
+          scale
+        });
+        bombLife = 5;
         return;
       }
     }
@@ -102,6 +112,13 @@ export default class Game extends PIXI.Container {
     this.objects.forEach(primitive => {
       primitive.update();
     });
+    if (bomb) {
+      bombLife--;
+      if (bombLife <= 0) {
+        bomb.destroy();
+        bomb = null;
+      }
+    }
   }
 
   initWorld() {
