@@ -23,4 +23,12 @@ export class Circle extends Primitive {
     this.body = body;
     this.sprite = sprite;
   }
+
+  checkPoint(x, y) {
+    const pos = this.body.getPosition();
+    return (
+      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
+      this.options.size
+    );
+  }
 }

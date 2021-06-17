@@ -26,11 +26,11 @@ export class Primitive {
     const body = this.world.createBody({
       type,
       position,
-      angle,
+      angle
     });
     body.createFixture(shape, {
       density: 1.0,
-      friction: 0.3,
+      friction: 0.3
     });
 
     return body;
@@ -48,7 +48,7 @@ export class Primitive {
         bodyB: b,
         localAnchorB: Vec2(0, 0),
         frequencyHz: 12,
-        dampingRatio: 0.5,
+        dampingRatio: 0.5
       })
     );
   }
@@ -59,6 +59,9 @@ export class Primitive {
 
   checkPoint(x, y) {
     const pos = this.body.getPosition();
-    return Math.sqrt((pos.x - x) ^ (2 + (pos.y - y)) ^ 2) < this.options.size;
+    return (
+      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
+      this.options.size / 2
+    );
   }
 }
