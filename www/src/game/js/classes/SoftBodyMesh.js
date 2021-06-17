@@ -7,7 +7,7 @@ import { Primitive } from "./Primitive";
 const { Vec2 } = planck;
 
 export class SoftBodyMesh extends Primitive {
-  init(x, y, {size}) {
+  init(x, y, { size }) {
     const scale = this.scale;
     this.size = size;
     const texture = this.createTexture();
@@ -98,5 +98,16 @@ export class SoftBodyMesh extends Primitive {
       vertices.push(y * this.scale * 1.3);
       return vertices;
     }, []);
+  }
+
+  destroy() {
+    for (let body of this.bodies) {
+      this.world.destroyBody(body);
+    }
+  }
+
+  checkPoint(x, y) {
+    const pos = this.bodies[0].getPosition();
+    return Math.sqrt((pos.x - x) ^ (2 + (pos.y - y)) ^ 2) < this.options.size;
   }
 }

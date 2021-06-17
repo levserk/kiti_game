@@ -34,4 +34,8 @@ export class Ground extends Primitive {
     this.body = body;
     this.sprite = sprite;
   }
+
+  checkPoint() {
+    return false;
+  }
 }

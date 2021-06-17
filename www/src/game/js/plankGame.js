@@ -68,6 +68,18 @@ export default class Game extends PIXI.Container {
     let point = e.data.getLocalPosition(this);
     console.log(point, PointToVec2(point));
     const pos = PointToVec2(point);
+
+    for (let i in this.objects) {
+      const object = this.objects[i];
+      if (object.checkPoint(pos.x, pos.y)) {
+        console.log(object);
+        object.destroy();
+        this.removeChild(...object.getChildren());
+        this.objects.splice(i,1);
+        return;
+      }
+    }
+
     this.createPrimitive(pos.x, pos.y, Math.random() / 4 + 0.4, "softBodyMesh");
   }
 
