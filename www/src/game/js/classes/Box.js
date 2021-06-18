@@ -6,7 +6,7 @@ import { Primitive } from "./Primitive";
 const { Vec2 } = planck;
 
 export class Box extends Primitive {
-  init(x, y, {size}) {
+  init(x, y, { size, color }) {
     const body = this.createBody(
       planck.Box(size / 2, size / 2),
       "dynamic",
@@ -15,6 +15,7 @@ export class Box extends Primitive {
     const sprite = new PIXI.Container();
     const g = new PIXI.Graphics();
     g.lineStyle(1, 0xffffff, 1);
+    g.beginFill(color, 1);
     g.drawRect(
       (-size / 2) * this.scale,
       (-size / 2) * this.scale,

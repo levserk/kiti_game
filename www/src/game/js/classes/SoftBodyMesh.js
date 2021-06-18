@@ -7,10 +7,10 @@ import { Primitive } from "./Primitive";
 const { Vec2 } = planck;
 
 export class SoftBodyMesh extends Primitive {
-  init(x, y, { size }) {
+  init(x, y, { size, color }) {
     const scale = this.scale;
     this.size = size;
-    const texture = this.createTexture();
+    const texture = this.createTexture(color);
     const r = size / 4;
     const n = Math.floor((size * Math.PI) / r / 1.2);
 
@@ -66,13 +66,13 @@ export class SoftBodyMesh extends Primitive {
     this.sprite = sprite;
   }
 
-  createTexture() {
+  createTexture(color) {
     const graphics = new PIXI.Graphics();
     //graphics.lineStyle(5, 0xffffff, 1);
-    graphics.beginFill(0xde3249, 1);
+    graphics.beginFill(color, 1);
     graphics.drawCircle(0, 0, 50);
     graphics.endFill();
-    graphics.beginFill(0x153249, 1);
+    graphics.beginFill(color, 1);
     graphics.drawCircle(0, 0, 30);
     graphics.endFill();
 

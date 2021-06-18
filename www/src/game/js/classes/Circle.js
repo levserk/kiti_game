@@ -6,7 +6,7 @@ import { Primitive } from "./Primitive";
 const { Vec2 } = planck;
 
 export class Circle extends Primitive {
-  init(x, y, {size}) {
+  init(x, y, {size, color}) {
     const body = this.createBody(
       planck.Circle(Vec2(0, 0), size),
       "dynamic",
@@ -15,6 +15,7 @@ export class Circle extends Primitive {
     const sprite = new PIXI.Container();
     const g = new PIXI.Graphics();
     g.lineStyle(1, 0xffffff, 1);
+    g.beginFill(color, 1);
     g.drawCircle(0, 0, size * this.scale);
     g.endFill();
     g.cacheAsBitmap = true;

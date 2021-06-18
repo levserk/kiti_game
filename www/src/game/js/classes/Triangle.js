@@ -6,7 +6,7 @@ import { Primitive } from "./Primitive";
 const { Vec2 } = planck;
 
 export class Triangle extends Primitive {
-  init(x, y, {size}) {
+  init(x, y, { size, color }) {
     const body = this.createBody(
       planck.Polygon([
         Vec2(-1.0 * size, 0 * size),
@@ -21,6 +21,7 @@ export class Triangle extends Primitive {
     const g = new PIXI.Graphics();
 
     g.lineStyle(1, 0xffffff, 1);
+    g.beginFill(color, 1);
     g.drawPolygon([
       new PIXI.Point(-1 * size * this.scale, 0 * size * this.scale),
       new PIXI.Point(0 * size * this.scale, 1 * size * this.scale),

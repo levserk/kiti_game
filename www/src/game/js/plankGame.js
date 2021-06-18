@@ -16,12 +16,13 @@ const PIXI = require("pixi.js");
 const metersPerPixel = 0.01;
 let scale = 1 / metersPerPixel;
 
-const PointToVec2 = p => Vec2(p.x / scale, p.y / scale);
+const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
 
 const worldWidth = 7;
 const worldHeight = 15;
 
-const figures = ["box", "triangle", "circle", "softBody", "softBodyMesh"];
+const figures = ["box", "triangle", "circle", "softBodyMesh"];
+const colors = ["0xfadadd", "0xffc0cb", "0xd8bfd8", "0xddadaf"];
 
 const COUNT_OBJECTS_TO_CLEAR = 3;
 
@@ -54,7 +55,7 @@ export default class Game extends PIXI.Container {
 
   addBackground() {
     const g = new PIXI.Graphics();
-    g.beginFill(0x000000, 1);
+    g.beginFill(0xffffff, 1);
     g.lineStyle(1, 0x000000, 1);
     g.drawRect(
       (-worldWidth / 2) * scale,
@@ -89,11 +90,12 @@ export default class Game extends PIXI.Container {
       }
     }
 
-    this.createPrimitive(pos.x, pos.y, Math.random() / 4 + 0.4, "softBodyMesh");
+    this.createPrimitive(pos.x, pos.y, Math.random() / 2 + 0.6);
+    this.removeNearest();
   }
 
   handleKeyPress() {
-    window.onkeydown = e => {
+    window.onkeydown = (e) => {
       console.log(e.keyCode);
       if (e && e.keyCode > 47) {
         this.createPrimitive(
@@ -104,27 +106,31 @@ export default class Game extends PIXI.Container {
         );
       }
       if (e && e.keyCode === 32) {
-        let groups = this.findGroups();
-        console.log(groups);
-        for (let group of groups) {
-          if (group.length > 2) {
-            for (let i of group) {
-              let object = this.objects[i],
-                pos = object.getPosition();
-              this.removePrimitive(object, i);
-
-              this.createPrimitive(
-                pos.x,
-                pos.y,
-                object.options.size * 1.5,
-                "bomb",
-                5
-              );
-            }
-          }
-        }
+        this.removeNearest();
       }
     };
+  }
+
+  removeNearest() {
+    let groups = this.findGroups();
+    console.log(groups);
+    for (let group of groups) {
+      if (group.length > 2) {
+        for (let i of group) {
+          let object = this.objects[i],
+            pos = object.getPosition();
+          this.removePrimitive(object, i);
+
+          this.createPrimitive(
+            pos.x,
+            pos.y,
+            object.options.size * 1.5,
+            "bomb",
+            5
+          );
+        }
+      }
+    }
   }
 
   update(delta) {
@@ -150,7 +156,7 @@ export default class Game extends PIXI.Container {
     if (removed >= COUNT_OBJECTS_TO_CLEAR) {
       console.log(`!! clear`, objectsCount, removed);
 
-      this.objects = this.objects.filter(o => !!o);
+      this.objects = this.objects.filter((o) => !!o);
     }
   }
 
@@ -170,57 +176,47 @@ export default class Game extends PIXI.Container {
     );
     this.createPrimitive(2, -1, 1, "box");
     this.createPrimitive(-2, -1, 1, "box");
-    this.createPrimitive(0, -3, 0.2, "box");
     this.createPrimitive(1, -3, 0.5, "circle");
-    this.createPrimitive(-1, -1, 0.3, "triangle");
+    this.createPrimitive(-1, -1, 0.8, "triangle");
     this.createPrimitive(0, -10, 0.5, "softBodyMesh");
   }
 
-  createPrimitive(x, y, size, type = "box", life) {
+  createPrimitive(x, y, size, type, life) {
     let primitive;
+    type = type || figures[Math.floor(Math.random() * figures.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const options = { x, y, size, scale, color, renderer: this.renderer };
 
     switch (type) {
       case "box":
-        primitive = new Box(this.world, { x, y, size, scale });
+        primitive = new Box(this.world, options);
         break;
       case "ground":
         primitive = new Ground(this.world, {
-          x,
-          y,
-          size,
-          scale,
-          type: "horizontal"
+          ...options,
+          type: "horizontal",
         });
         break;
       case "ground_ver":
         primitive = new Ground(this.world, {
-          x,
-          y,
-          size,
-          scale,
-          type: "vertical"
+          ...options,
+          type: "vertical",
         });
         break;
       case "circle":
-        primitive = new Circle(this.world, { x, y, size, scale });
+        primitive = new Circle(this.world, options);
         break;
       case "bomb":
-        primitive = new Bomb(this.world, { x, y, size, life, scale });
+        primitive = new Bomb(this.world, { ...options, life });
         break;
       case "triangle":
-        primitive = new Triangle(this.world, { x, y, size, scale });
+        primitive = new Triangle(this.world, options);
         break;
       case "softBody":
-        primitive = new SoftBody(this.world, { x, y, size, scale });
+        primitive = new SoftBody(this.world, options);
         break;
       case "softBodyMesh":
-        primitive = new SoftBodyMesh(this.world, {
-          x,
-          y,
-          size,
-          scale,
-          renderer: this.renderer
-        });
+        primitive = new SoftBodyMesh(this.world, options);
         break;
     }
 
@@ -250,6 +246,7 @@ export default class Game extends PIXI.Container {
             b &&
             !(b instanceof Ground) &&
             i !== j &&
+            b.options.color === a.options.color &&
             (objGroups[i] === undefined ||
               objGroups[j] === undefined ||
               objGroups[i] !== objGroups[j])
