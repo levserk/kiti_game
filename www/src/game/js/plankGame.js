@@ -22,8 +22,7 @@ const worldHeight = 15;
 
 const figures = ["box", "triangle", "circle", "softBody", "softBodyMesh"];
 
-let bomb = null;
-let bombLife = 0;
+const COUNT_OBJECTS_TO_CLEAR = 3;
 
 export default class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
@@ -75,17 +74,16 @@ export default class Game extends PIXI.Container {
     for (let i in this.objects) {
       const object = this.objects[i];
       if (object.checkPoint(pos.x, pos.y)) {
-        console.log(object);
-        object.destroy();
-        this.removeChild(...object.getChildren());
-        this.objects.splice(i, 1);
-        bomb = new Circle(this.world, {
-          x: pos.x,
-          y: pos.y,
-          size: object.options.size * 1.5,
-          scale
-        });
-        bombLife = 5;
+        this.removePrimitive(object, i);
+
+        this.createPrimitive(
+          pos.x,
+          pos.y,
+          object.options.size * 1.5,
+          "bomb",
+          5
+        );
+
         return;
       }
     }
@@ -109,15 +107,28 @@ export default class Game extends PIXI.Container {
 
   update(delta) {
     this.world.step(1 / 60);
-    this.objects.forEach(primitive => {
-      primitive.update();
-    });
-    if (bomb) {
-      bombLife--;
-      if (bombLife <= 0) {
-        bomb.destroy();
-        bomb = null;
+
+    let removed = 0,
+      primitive,
+      objectsCount = this.objects.length;
+
+    for (let i = 0; i < objectsCount; i++) {
+      primitive = this.objects[i];
+
+      if (primitive) {
+        primitive.update();
+        if (primitive.life <= 0) {
+          this.removePrimitive(primitive, i);
+        }
+      } else {
+        removed++;
       }
+    }
+
+    if (removed >= COUNT_OBJECTS_TO_CLEAR) {
+      console.log(`!! clear`, objectsCount, removed);
+
+      this.objects = this.objects.filter(o => !!o);
     }
   }
 
@@ -143,7 +154,7 @@ export default class Game extends PIXI.Container {
     this.createPrimitive(0, -10, 0.5, "softBodyMesh");
   }
 
-  createPrimitive(x, y, size, type = "box") {
+  createPrimitive(x, y, size, type = "box", life) {
     let primitive;
 
     switch (type) {
@@ -171,6 +182,9 @@ export default class Game extends PIXI.Container {
       case "circle":
         primitive = new Circle(this.world, { x, y, size, scale });
         break;
+      case "bomb":
+        primitive = new Circle(this.world, { x, y, size, life, scale });
+        break;
       case "triangle":
         primitive = new Triangle(this.world, { x, y, size, scale });
         break;
@@ -190,5 +204,13 @@ export default class Game extends PIXI.Container {
 
     this.addChild(...primitive.getChildren());
     this.objects.push(primitive);
+  }
+
+  removePrimitive(object, i) {
+    object.destroy();
+    this.removeChild(...object.getChildren());
+    if (i >= 0) {
+      this.objects[i] = null;
+    }
   }
 }
