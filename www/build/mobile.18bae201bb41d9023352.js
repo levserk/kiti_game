@@ -62877,6 +62877,24 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./www/src/game/index.js":
+/*!*******************************!*\
+  !*** ./www/src/game/index.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _js_pixi_app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./js/pixi_app */ "./www/src/game/js/pixi_app.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_js_pixi_app__WEBPACK_IMPORTED_MODULE_0__.default);
+
+
+/***/ }),
+
 /***/ "./www/src/game/js/classes/Box.js":
 /*!****************************************!*\
   !*** ./www/src/game/js/classes/Box.js ***!
@@ -63790,31 +63808,40 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./www/src/web/index.js":
-/*!******************************!*\
-  !*** ./www/src/web/index.js ***!
-  \******************************/
+/***/ "./www/src/mobile/index.js":
+/*!*********************************!*\
+  !*** ./www/src/mobile/index.js ***!
+  \*********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _game_js_pixi_app_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../game/js/pixi_app.js */ "./www/src/game/js/pixi_app.js");
+/* harmony import */ var _game_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../game/index.js */ "./www/src/game/index.js");
 
 
-const init = () => {
-    window.pixiApp = new _game_js_pixi_app_js__WEBPACK_IMPORTED_MODULE_0__.default();
+var app = {
+    // Application Constructor
+    initialize: function() {
+        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+    },
+
+    // deviceready Event Handler
+    //
+    // Bind any cordova events here. Common events are:
+    // 'pause', 'resume', etc.
+    onDeviceReady: function() {
+        this.receivedEvent('deviceready');
+
+        new _game_index_js__WEBPACK_IMPORTED_MODULE_0__.default();
+    },
+
+    // Update DOM on a Received Event
+    receivedEvent: function(id) {
+        console.log('Received Event: ' + id);
+    }
 };
 
-init();
-
-/*
-if (module.hot) {
-    module.hot.accept(['../game/js/pixi_app.js'], () => {
-        document.body.removeChild(pixiApp.app.view);
-        init();
-    });
-}
-*/
+app.initialize();
 
 /***/ })
 
@@ -63931,7 +63958,7 @@ if (module.hot) {
 /******/ 	
 /******/ 	/* webpack/runtime/get update manifest filename */
 /******/ 	(() => {
-/******/ 		__webpack_require__.hmrF = () => ("web." + __webpack_require__.h() + ".hot-update.json");
+/******/ 		__webpack_require__.hmrF = () => ("mobile." + __webpack_require__.h() + ".hot-update.json");
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
@@ -64404,7 +64431,7 @@ if (module.hot) {
 /******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
-/******/ 			"web": 0
+/******/ 			"mobile": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -64914,8 +64941,8 @@ if (module.hot) {
 /******/ 	// module cache are used so entry inlining is disabled
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	var __webpack_exports__ = __webpack_require__("./www/src/web/index.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./www/src/mobile/index.js");
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=web.js.map
+//# sourceMappingURL=mobile.18bae201bb41d9023352.js.map
