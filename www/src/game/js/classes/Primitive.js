@@ -58,10 +58,18 @@ export class Primitive {
   }
 
   checkPoint(x, y) {
-    const pos = this.body.getPosition();
+    const pos = this.getPosition();
     return (
       Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
-      this.options.size / 2
+      this.getSize()
     );
+  }
+
+  getPosition() {
+    return this.body.getPosition();
+  }
+
+  getSize() {
+    return this.options.size;
   }
 }

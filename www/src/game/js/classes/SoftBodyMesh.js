@@ -106,11 +106,7 @@ export class SoftBodyMesh extends Primitive {
     }
   }
 
-  checkPoint(x, y) {
-    const pos = this.bodies[0].getPosition();
-    return (
-      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
-      this.options.size
-    );
+  getPosition() {
+    return this.bodies[0].getPosition();
   }
 }

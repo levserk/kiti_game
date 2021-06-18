@@ -1,5 +1,6 @@
 import planck from "planck-js";
 
+import { Bomb } from "./classes/Bomb";
 import { Box } from "./classes/Box";
 import { Circle } from "./classes/Circle";
 import { Ground } from "./classes/Ground";
@@ -73,7 +74,7 @@ export default class Game extends PIXI.Container {
 
     for (let i in this.objects) {
       const object = this.objects[i];
-      if (object.checkPoint(pos.x, pos.y)) {
+      if (object && object.checkPoint(pos.x, pos.y)) {
         this.removePrimitive(object, i);
 
         this.createPrimitive(
@@ -101,6 +102,27 @@ export default class Game extends PIXI.Container {
           Math.random() / 4 + 0.4,
           figures[e.keyCode - 48]
         );
+      }
+      if (e && e.keyCode === 32) {
+        let groups = this.findGroups();
+        console.log(groups);
+        for (let group of groups) {
+          if (group.length > 2) {
+            for (let i of group) {
+              let object = this.objects[i],
+                pos = object.getPosition();
+              this.removePrimitive(object, i);
+
+              this.createPrimitive(
+                pos.x,
+                pos.y,
+                object.options.size * 1.5,
+                "bomb",
+                5
+              );
+            }
+          }
+        }
       }
     };
   }
@@ -183,7 +205,7 @@ export default class Game extends PIXI.Container {
         primitive = new Circle(this.world, { x, y, size, scale });
         break;
       case "bomb":
-        primitive = new Circle(this.world, { x, y, size, life, scale });
+        primitive = new Bomb(this.world, { x, y, size, life, scale });
         break;
       case "triangle":
         primitive = new Triangle(this.world, { x, y, size, scale });
@@ -213,4 +235,63 @@ export default class Game extends PIXI.Container {
       this.objects[i] = null;
     }
   }
+
+  findGroups() {
+    let groups = [],
+      objGroups = {},
+      a,
+      b;
+    for (let i = 0; i < this.objects.length; i++) {
+      a = this.objects[i];
+      if (a && !(a instanceof Ground)) {
+        for (let j = 0; j < this.objects.length; j++) {
+          b = this.objects[j];
+          if (
+            b &&
+            !(b instanceof Ground) &&
+            i !== j &&
+            (objGroups[i] === undefined ||
+              objGroups[j] === undefined ||
+              objGroups[i] !== objGroups[j])
+          ) {
+            if (checkNearest(a, b)) {
+              if (objGroups[i] >= 0 && objGroups[j] === undefined) {
+                groups[objGroups[i]].push(j);
+                objGroups[j] = objGroups[i];
+              } else if (objGroups[i] === undefined && objGroups[j] >= 0) {
+                groups[objGroups[j]].push(i);
+                objGroups[i] = objGroups[j];
+              } else if (
+                objGroups[i] === undefined &&
+                objGroups[j] === undefined
+              ) {
+                let gi = groups.push([i, j]) - 1;
+                objGroups[i] = gi;
+                objGroups[j] = gi;
+              } else {
+                for (let o of groups[objGroups[j]]) {
+                  groups[objGroups[i]].push(o);
+                  objGroups[o] = objGroups[i];
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return groups;
+  }
+}
+
+function checkNearest(a, b) {
+  let aPos = a.getPosition(),
+    bPos = b.getPosition(),
+    aSize = a.getSize(),
+    bSize = b.getSize();
+
+  return (
+    Math.sqrt(Math.pow(aPos.x - bPos.x, 2) + Math.pow(aPos.y - bPos.y, 2)) <
+    aSize + bSize + 0.1
+  );
 }

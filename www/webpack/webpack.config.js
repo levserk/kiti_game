@@ -11,7 +11,7 @@ module.exports = {
   output: {
     path: path.resolve("./www/build"),
     publicPath: "./build/",
-    filename: "[name].[hash].js",
+    filename: "[name].js",
   },
   module: {
     rules: [

@@ -28,4 +28,8 @@ export class Box extends Primitive {
     this.body = body;
     this.sprite = sprite;
   }
+
+  getSize() {
+    return this.options.size / 2;
+  }
 }

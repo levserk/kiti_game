@@ -62877,6 +62877,51 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./www/src/game/js/classes/Bomb.js":
+/*!*****************************************!*\
+  !*** ./www/src/game/js/classes/Bomb.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+var planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache;
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Bomb": () => (/* binding */ Bomb)
+/* harmony export */ });
+/* harmony import */ var pixi_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+/* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
+/* harmony import */ var _Primitive__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Primitive */ "./www/src/game/js/classes/Primitive.js");
+
+
+
+
+
+const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
+
+class Bomb extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
+  init(x, y, { size, life = 3 }) {
+    const body = this.createBody(
+      planck_js__WEBPACK_IMPORTED_MODULE_1__.Circle(Vec2(0, 0), size),
+      "dynamic",
+      Vec2(x, y)
+    );
+    const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
+
+    this.body = body;
+    this.sprite = sprite;
+    this.life = life;
+  }
+
+  update() {
+    super.update();
+    this.life--;
+  }
+}
+
+
+/***/ }),
+
 /***/ "./www/src/game/js/classes/Box.js":
 /*!****************************************!*\
   !*** ./www/src/game/js/classes/Box.js ***!
@@ -62922,6 +62967,10 @@ class Box extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     this.body = body;
     this.sprite = sprite;
   }
+
+  getSize() {
+    return this.options.size / 2;
+  }
 }
 
 
@@ -62966,14 +63015,6 @@ class Circle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
 
     this.body = body;
     this.sprite = sprite;
-  }
-
-  checkPoint(x, y) {
-    const pos = this.body.getPosition();
-    return (
-      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
-      this.options.size
-    );
   }
 }
 
@@ -63112,11 +63153,19 @@ class Primitive {
   }
 
   checkPoint(x, y) {
-    const pos = this.body.getPosition();
+    const pos = this.getPosition();
     return (
       Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
-      this.options.size / 2
+      this.getSize()
     );
+  }
+
+  getPosition() {
+    return this.body.getPosition();
+  }
+
+  getSize() {
+    return this.options.size;
   }
 }
 
@@ -63320,12 +63369,8 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_3__.Primitive {
     }
   }
 
-  checkPoint(x, y) {
-    const pos = this.bodies[0].getPosition();
-    return (
-      Math.sqrt(Math.pow(pos.x - x, 2) + Math.pow(pos.y - y, 2)) <
-      this.options.size
-    );
+  getPosition() {
+    return this.bodies[0].getPosition();
   }
 }
 
@@ -63566,13 +63611,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ Game)
 /* harmony export */ });
 /* harmony import */ var planck_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! planck-js */ "./node_modules/planck-js/lib/index.js");
-/* harmony import */ var _classes_Box__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/Box */ "./www/src/game/js/classes/Box.js");
-/* harmony import */ var _classes_Circle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./classes/Circle */ "./www/src/game/js/classes/Circle.js");
-/* harmony import */ var _classes_Ground__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./classes/Ground */ "./www/src/game/js/classes/Ground.js");
-/* harmony import */ var _classes_SoftBody__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./classes/SoftBody */ "./www/src/game/js/classes/SoftBody.js");
-/* harmony import */ var _classes_SoftBodyMesh__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./classes/SoftBodyMesh */ "./www/src/game/js/classes/SoftBodyMesh.js");
-/* harmony import */ var _classes_Triangle__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./classes/Triangle */ "./www/src/game/js/classes/Triangle.js");
-/* harmony import */ var _const__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./const */ "./www/src/game/js/const.js");
+/* harmony import */ var _classes_Bomb__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./classes/Bomb */ "./www/src/game/js/classes/Bomb.js");
+/* harmony import */ var _classes_Box__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./classes/Box */ "./www/src/game/js/classes/Box.js");
+/* harmony import */ var _classes_Circle__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./classes/Circle */ "./www/src/game/js/classes/Circle.js");
+/* harmony import */ var _classes_Ground__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./classes/Ground */ "./www/src/game/js/classes/Ground.js");
+/* harmony import */ var _classes_SoftBody__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./classes/SoftBody */ "./www/src/game/js/classes/SoftBody.js");
+/* harmony import */ var _classes_SoftBodyMesh__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./classes/SoftBodyMesh */ "./www/src/game/js/classes/SoftBodyMesh.js");
+/* harmony import */ var _classes_Triangle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./classes/Triangle */ "./www/src/game/js/classes/Triangle.js");
+/* harmony import */ var _const__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./const */ "./www/src/game/js/const.js");
+
 
 
 
@@ -63597,8 +63644,7 @@ const worldHeight = 15;
 
 const figures = ["box", "triangle", "circle", "softBody", "softBodyMesh"];
 
-let bomb = null;
-let bombLife = 0;
+const COUNT_OBJECTS_TO_CLEAR = 3;
 
 class Game extends PIXI.Container {
   constructor(options, resources, renderer) {
@@ -63607,9 +63653,9 @@ class Game extends PIXI.Container {
     this.interactive = true;
     this.renderer = renderer;
     this.resources = resources;
-    this.options = Object.assign({}, _const__WEBPACK_IMPORTED_MODULE_7__.defaultOptions, options);
+    this.options = Object.assign({}, _const__WEBPACK_IMPORTED_MODULE_8__.defaultOptions, options);
 
-    scale = (0,_const__WEBPACK_IMPORTED_MODULE_7__.calcScale)(
+    scale = (0,_const__WEBPACK_IMPORTED_MODULE_8__.calcScale)(
       worldWidth,
       worldHeight,
       this.options.width,
@@ -63649,18 +63695,17 @@ class Game extends PIXI.Container {
 
     for (let i in this.objects) {
       const object = this.objects[i];
-      if (object.checkPoint(pos.x, pos.y)) {
-        console.log(object);
-        object.destroy();
-        this.removeChild(...object.getChildren());
-        this.objects.splice(i, 1);
-        bomb = new _classes_Circle__WEBPACK_IMPORTED_MODULE_2__.Circle(this.world, {
-          x: pos.x,
-          y: pos.y,
-          size: object.options.size * 1.5,
-          scale
-        });
-        bombLife = 5;
+      if (object && object.checkPoint(pos.x, pos.y)) {
+        this.removePrimitive(object, i);
+
+        this.createPrimitive(
+          pos.x,
+          pos.y,
+          object.options.size * 1.5,
+          "bomb",
+          5
+        );
+
         return;
       }
     }
@@ -63679,20 +63724,54 @@ class Game extends PIXI.Container {
           figures[e.keyCode - 48]
         );
       }
+      if (e && e.keyCode === 32) {
+        let groups = this.findGroups();
+        console.log(groups);
+        for (let group of groups) {
+          if (group.length > 2) {
+            for (let i of group) {
+              let object = this.objects[i],
+                pos = object.getPosition();
+              this.removePrimitive(object, i);
+
+              this.createPrimitive(
+                pos.x,
+                pos.y,
+                object.options.size * 1.5,
+                "bomb",
+                5
+              );
+            }
+          }
+        }
+      }
     };
   }
 
   update(delta) {
     this.world.step(1 / 60);
-    this.objects.forEach(primitive => {
-      primitive.update();
-    });
-    if (bomb) {
-      bombLife--;
-      if (bombLife <= 0) {
-        bomb.destroy();
-        bomb = null;
+
+    let removed = 0,
+      primitive,
+      objectsCount = this.objects.length;
+
+    for (let i = 0; i < objectsCount; i++) {
+      primitive = this.objects[i];
+
+      if (primitive) {
+        primitive.update();
+        if (primitive.life <= 0) {
+          this.removePrimitive(primitive, i);
+        }
+      } else {
+        removed++;
       }
+    }
+
+    if (removed >= COUNT_OBJECTS_TO_CLEAR) {
+      console.log(`!! clear`, objectsCount, removed);
+
+      this.objects = this.objects.filter(o => !!o);
     }
   }
 
@@ -63718,15 +63797,15 @@ class Game extends PIXI.Container {
     this.createPrimitive(0, -10, 0.5, "softBodyMesh");
   }
 
-  createPrimitive(x, y, size, type = "box") {
+  createPrimitive(x, y, size, type = "box", life) {
     let primitive;
 
     switch (type) {
       case "box":
-        primitive = new _classes_Box__WEBPACK_IMPORTED_MODULE_1__.Box(this.world, { x, y, size, scale });
+        primitive = new _classes_Box__WEBPACK_IMPORTED_MODULE_2__.Box(this.world, { x, y, size, scale });
         break;
       case "ground":
-        primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_3__.Ground(this.world, {
+        primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground(this.world, {
           x,
           y,
           size,
@@ -63735,7 +63814,7 @@ class Game extends PIXI.Container {
         });
         break;
       case "ground_ver":
-        primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_3__.Ground(this.world, {
+        primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground(this.world, {
           x,
           y,
           size,
@@ -63744,16 +63823,19 @@ class Game extends PIXI.Container {
         });
         break;
       case "circle":
-        primitive = new _classes_Circle__WEBPACK_IMPORTED_MODULE_2__.Circle(this.world, { x, y, size, scale });
+        primitive = new _classes_Circle__WEBPACK_IMPORTED_MODULE_3__.Circle(this.world, { x, y, size, scale });
+        break;
+      case "bomb":
+        primitive = new _classes_Bomb__WEBPACK_IMPORTED_MODULE_1__.Bomb(this.world, { x, y, size, life, scale });
         break;
       case "triangle":
-        primitive = new _classes_Triangle__WEBPACK_IMPORTED_MODULE_6__.Triangle(this.world, { x, y, size, scale });
+        primitive = new _classes_Triangle__WEBPACK_IMPORTED_MODULE_7__.Triangle(this.world, { x, y, size, scale });
         break;
       case "softBody":
-        primitive = new _classes_SoftBody__WEBPACK_IMPORTED_MODULE_4__.SoftBody(this.world, { x, y, size, scale });
+        primitive = new _classes_SoftBody__WEBPACK_IMPORTED_MODULE_5__.SoftBody(this.world, { x, y, size, scale });
         break;
       case "softBodyMesh":
-        primitive = new _classes_SoftBodyMesh__WEBPACK_IMPORTED_MODULE_5__.SoftBodyMesh(this.world, {
+        primitive = new _classes_SoftBodyMesh__WEBPACK_IMPORTED_MODULE_6__.SoftBodyMesh(this.world, {
           x,
           y,
           size,
@@ -63766,6 +63848,73 @@ class Game extends PIXI.Container {
     this.addChild(...primitive.getChildren());
     this.objects.push(primitive);
   }
+
+  removePrimitive(object, i) {
+    object.destroy();
+    this.removeChild(...object.getChildren());
+    if (i >= 0) {
+      this.objects[i] = null;
+    }
+  }
+
+  findGroups() {
+    let groups = [],
+      objGroups = {},
+      a,
+      b;
+    for (let i = 0; i < this.objects.length; i++) {
+      a = this.objects[i];
+      if (a && !(a instanceof _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground)) {
+        for (let j = 0; j < this.objects.length; j++) {
+          b = this.objects[j];
+          if (
+            b &&
+            !(b instanceof _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground) &&
+            i !== j &&
+            (objGroups[i] === undefined ||
+              objGroups[j] === undefined ||
+              objGroups[i] !== objGroups[j])
+          ) {
+            if (checkNearest(a, b)) {
+              if (objGroups[i] >= 0 && objGroups[j] === undefined) {
+                groups[objGroups[i]].push(j);
+                objGroups[j] = objGroups[i];
+              } else if (objGroups[i] === undefined && objGroups[j] >= 0) {
+                groups[objGroups[j]].push(i);
+                objGroups[i] = objGroups[j];
+              } else if (
+                objGroups[i] === undefined &&
+                objGroups[j] === undefined
+              ) {
+                let gi = groups.push([i, j]) - 1;
+                objGroups[i] = gi;
+                objGroups[j] = gi;
+              } else {
+                for (let o of groups[objGroups[j]]) {
+                  groups[objGroups[i]].push(o);
+                  objGroups[o] = objGroups[i];
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return groups;
+  }
+}
+
+function checkNearest(a, b) {
+  let aPos = a.getPosition(),
+    bPos = b.getPosition(),
+    aSize = a.getSize(),
+    bSize = b.getSize();
+
+  return (
+    Math.sqrt(Math.pow(aPos.x - bPos.x, 2) + Math.pow(aPos.y - bPos.y, 2)) <
+    aSize + bSize + 0.1
+  );
 }
 
 
@@ -63936,7 +64085,7 @@ if (module.hot) {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("18bae201bb41d9023352")
+/******/ 		__webpack_require__.h = () => ("be0b3caee1b3a05cbb16")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
