@@ -9,6 +9,8 @@ import { SoftBodyMesh } from "./classes/SoftBodyMesh";
 import { Triangle } from "./classes/Triangle";
 import { calcScale, defaultOptions } from "./const";
 
+import Particles from "./particles/particles";
+
 const { Vec2, World } = planck;
 
 const PIXI = require("pixi.js");
@@ -48,9 +50,11 @@ export default class Game extends PIXI.Container {
     this.position.set(this.options.width / 2, this.options.height);
 
     this.addBackground();
+
     this.initWorld();
 
     this.on("pointerdown", this.onPointerDown);
+    this.addParticlesContainer();
   }
 
   addBackground() {
@@ -66,12 +70,24 @@ export default class Game extends PIXI.Container {
     g.endFill();
     g.cacheAsBitmap = true;
     this.addChild(g);
+    this.background = g;
+  }
+
+  addParticlesContainer() {
+    this.particles = new Particles(worldWidth, worldHeight);
+    this.particles.x = 0; (this.worldWidth / 2) * scale;
+    this.particles.y = 0; (this.worldHeight / 2) * scale;
+    this.addChild(this.particles);
   }
 
   onPointerDown(e) {
     let point = e.data.getLocalPosition(this);
     console.log(point, PointToVec2(point));
     const pos = PointToVec2(point);
+
+    this.removeNearest();
+
+    this.particles.createParticle(point.x, point.y, 0x000000);
 
     for (let i in this.objects) {
       const object = this.objects[i];
@@ -90,8 +106,7 @@ export default class Game extends PIXI.Container {
       }
     }
 
-    this.createPrimitive(pos.x, pos.y, Math.random() / 2 + 0.6);
-    this.removeNearest();
+    this.createPrimitive(pos.x, pos.y, Math.random() * 0.4 + 0.6);
   }
 
   handleKeyPress() {
@@ -117,17 +132,20 @@ export default class Game extends PIXI.Container {
     for (let group of groups) {
       if (group.length > 2) {
         for (let i of group) {
-          let object = this.objects[i],
-            pos = object.getPosition();
-          this.removePrimitive(object, i);
+          let object = this.objects[i];
+          if (object) {
+            let pos = object.getPosition();
+            this.removePrimitive(object, i);
 
-          this.createPrimitive(
-            pos.x,
-            pos.y,
-            object.options.size * 1.5,
-            "bomb",
-            5
-          );
+            this.createPrimitive(
+              pos.x,
+              pos.y,
+              object.getSize() * 1.2,
+              "bomb",
+              5,
+              object.options.color
+            );
+          }
         }
       }
     }
@@ -135,6 +153,7 @@ export default class Game extends PIXI.Container {
 
   update(delta) {
     this.world.step(1 / 60);
+    //this.particles.render();
 
     let removed = 0,
       primitive,
@@ -181,10 +200,10 @@ export default class Game extends PIXI.Container {
     this.createPrimitive(0, -10, 0.5, "softBodyMesh");
   }
 
-  createPrimitive(x, y, size, type, life) {
+  createPrimitive(x, y, size, type, life, color) {
     let primitive;
     type = type || figures[Math.floor(Math.random() * figures.length)];
-    const color = colors[Math.floor(Math.random() * colors.length)];
+    color = colors[Math.floor(Math.random() * colors.length)];
     const options = { x, y, size, scale, color, renderer: this.renderer };
 
     switch (type) {
@@ -208,6 +227,13 @@ export default class Game extends PIXI.Container {
         break;
       case "bomb":
         primitive = new Bomb(this.world, { ...options, life });
+        for (let i = 0; i < 20; i++) {
+          this.particles.createParticle(
+            options.x * scale,
+            options.y * scale,
+            options.color
+          );
+        }
         break;
       case "triangle":
         primitive = new Triangle(this.world, options);
@@ -289,6 +315,6 @@ function checkNearest(a, b) {
 
   return (
     Math.sqrt(Math.pow(aPos.x - bPos.x, 2) + Math.pow(aPos.y - bPos.y, 2)) <
-    aSize + bSize + 0.1
+    aSize + bSize + 0.15
   );
 }

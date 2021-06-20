@@ -14,7 +14,7 @@ export class Circle extends Primitive {
     );
     const sprite = new PIXI.Container();
     const g = new PIXI.Graphics();
-    g.lineStyle(1, 0xffffff, 1);
+    g.lineStyle(1, color, 0.5);
     g.beginFill(color, 1);
     g.drawCircle(0, 0, size * this.scale);
     g.endFill();

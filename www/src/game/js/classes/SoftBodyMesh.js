@@ -68,7 +68,7 @@ export class SoftBodyMesh extends Primitive {
 
   createTexture(color) {
     const graphics = new PIXI.Graphics();
-    //graphics.lineStyle(5, 0xffffff, 1);
+    graphics.lineStyle(5, color, 0.5);
     graphics.beginFill(color, 1);
     graphics.drawCircle(0, 0, 50);
     graphics.endFill();
