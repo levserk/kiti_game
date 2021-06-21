@@ -62945,7 +62945,7 @@ __webpack_require__.r(__webpack_exports__);
 const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class Box extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, {size}) {
+  init(x, y, { size, color }) {
     const body = this.createBody(
       planck_js__WEBPACK_IMPORTED_MODULE_1__.Box(size / 2, size / 2),
       "dynamic",
@@ -62954,6 +62954,7 @@ class Box extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
     const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
     g.lineStyle(1, 0xffffff, 1);
+    g.beginFill(color, 1);
     g.drawRect(
       (-size / 2) * this.scale,
       (-size / 2) * this.scale,
@@ -62999,7 +63000,7 @@ __webpack_require__.r(__webpack_exports__);
 const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class Circle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, {size}) {
+  init(x, y, {size, color}) {
     const body = this.createBody(
       planck_js__WEBPACK_IMPORTED_MODULE_1__.Circle(Vec2(0, 0), size),
       "dynamic",
@@ -63008,6 +63009,7 @@ class Circle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
     const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
     g.lineStyle(1, 0xffffff, 1);
+    g.beginFill(color, 1);
     g.drawCircle(0, 0, size * this.scale);
     g.endFill();
     g.cacheAsBitmap = true;
@@ -63270,10 +63272,10 @@ __webpack_require__.r(__webpack_exports__);
 const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_3__.Primitive {
-  init(x, y, { size }) {
+  init(x, y, { size, color }) {
     const scale = this.scale;
     this.size = size;
-    const texture = this.createTexture();
+    const texture = this.createTexture(color);
     const r = size / 4;
     const n = Math.floor((size * Math.PI) / r / 1.2);
 
@@ -63329,13 +63331,13 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_3__.Primitive {
     this.sprite = sprite;
   }
 
-  createTexture() {
+  createTexture(color) {
     const graphics = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
     //graphics.lineStyle(5, 0xffffff, 1);
-    graphics.beginFill(0xde3249, 1);
+    graphics.beginFill(color, 1);
     graphics.drawCircle(0, 0, 50);
     graphics.endFill();
-    graphics.beginFill(0x153249, 1);
+    graphics.beginFill(color, 1);
     graphics.drawCircle(0, 0, 30);
     graphics.endFill();
 
@@ -63400,7 +63402,7 @@ __webpack_require__.r(__webpack_exports__);
 const { Vec2 } = /*#__PURE__*/ (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache || (planck_js__WEBPACK_IMPORTED_MODULE_1___namespace_cache = __webpack_require__.t(planck_js__WEBPACK_IMPORTED_MODULE_1__, 2)));
 
 class Triangle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
-  init(x, y, {size}) {
+  init(x, y, { size, color }) {
     const body = this.createBody(
       planck_js__WEBPACK_IMPORTED_MODULE_1__.Polygon([
         Vec2(-1.0 * size, 0 * size),
@@ -63415,6 +63417,7 @@ class Triangle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
 
     g.lineStyle(1, 0xffffff, 1);
+    g.beginFill(color, 1);
     g.drawPolygon([
       new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(-1 * size * this.scale, 0 * size * this.scale),
       new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(0 * size * this.scale, 1 * size * this.scale),
@@ -63637,12 +63640,13 @@ const PIXI = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm
 const metersPerPixel = 0.01;
 let scale = 1 / metersPerPixel;
 
-const PointToVec2 = p => Vec2(p.x / scale, p.y / scale);
+const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
 
 const worldWidth = 7;
 const worldHeight = 15;
 
-const figures = ["box", "triangle", "circle", "softBody", "softBodyMesh"];
+const figures = ["box", "triangle", "circle", "softBodyMesh"];
+const colors = ["0xfadadd", "0xffc0cb", "0xd8bfd8", "0xddadaf"];
 
 const COUNT_OBJECTS_TO_CLEAR = 3;
 
@@ -63675,7 +63679,7 @@ class Game extends PIXI.Container {
 
   addBackground() {
     const g = new PIXI.Graphics();
-    g.beginFill(0x000000, 1);
+    g.beginFill(0xffffff, 1);
     g.lineStyle(1, 0x000000, 1);
     g.drawRect(
       (-worldWidth / 2) * scale,
@@ -63710,11 +63714,12 @@ class Game extends PIXI.Container {
       }
     }
 
-    this.createPrimitive(pos.x, pos.y, Math.random() / 4 + 0.4, "softBodyMesh");
+    this.createPrimitive(pos.x, pos.y, Math.random() / 2 + 0.6);
+    this.removeNearest();
   }
 
   handleKeyPress() {
-    window.onkeydown = e => {
+    window.onkeydown = (e) => {
       console.log(e.keyCode);
       if (e && e.keyCode > 47) {
         this.createPrimitive(
@@ -63725,27 +63730,31 @@ class Game extends PIXI.Container {
         );
       }
       if (e && e.keyCode === 32) {
-        let groups = this.findGroups();
-        console.log(groups);
-        for (let group of groups) {
-          if (group.length > 2) {
-            for (let i of group) {
-              let object = this.objects[i],
-                pos = object.getPosition();
-              this.removePrimitive(object, i);
-
-              this.createPrimitive(
-                pos.x,
-                pos.y,
-                object.options.size * 1.5,
-                "bomb",
-                5
-              );
-            }
-          }
-        }
+        this.removeNearest();
       }
     };
+  }
+
+  removeNearest() {
+    let groups = this.findGroups();
+    console.log(groups);
+    for (let group of groups) {
+      if (group.length > 2) {
+        for (let i of group) {
+          let object = this.objects[i],
+            pos = object.getPosition();
+          this.removePrimitive(object, i);
+
+          this.createPrimitive(
+            pos.x,
+            pos.y,
+            object.options.size * 1.5,
+            "bomb",
+            5
+          );
+        }
+      }
+    }
   }
 
   update(delta) {
@@ -63771,7 +63780,7 @@ class Game extends PIXI.Container {
     if (removed >= COUNT_OBJECTS_TO_CLEAR) {
       console.log(`!! clear`, objectsCount, removed);
 
-      this.objects = this.objects.filter(o => !!o);
+      this.objects = this.objects.filter((o) => !!o);
     }
   }
 
@@ -63791,57 +63800,47 @@ class Game extends PIXI.Container {
     );
     this.createPrimitive(2, -1, 1, "box");
     this.createPrimitive(-2, -1, 1, "box");
-    this.createPrimitive(0, -3, 0.2, "box");
     this.createPrimitive(1, -3, 0.5, "circle");
-    this.createPrimitive(-1, -1, 0.3, "triangle");
+    this.createPrimitive(-1, -1, 0.8, "triangle");
     this.createPrimitive(0, -10, 0.5, "softBodyMesh");
   }
 
-  createPrimitive(x, y, size, type = "box", life) {
+  createPrimitive(x, y, size, type, life) {
     let primitive;
+    type = type || figures[Math.floor(Math.random() * figures.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const options = { x, y, size, scale, color, renderer: this.renderer };
 
     switch (type) {
       case "box":
-        primitive = new _classes_Box__WEBPACK_IMPORTED_MODULE_2__.Box(this.world, { x, y, size, scale });
+        primitive = new _classes_Box__WEBPACK_IMPORTED_MODULE_2__.Box(this.world, options);
         break;
       case "ground":
         primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground(this.world, {
-          x,
-          y,
-          size,
-          scale,
-          type: "horizontal"
+          ...options,
+          type: "horizontal",
         });
         break;
       case "ground_ver":
         primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground(this.world, {
-          x,
-          y,
-          size,
-          scale,
-          type: "vertical"
+          ...options,
+          type: "vertical",
         });
         break;
       case "circle":
-        primitive = new _classes_Circle__WEBPACK_IMPORTED_MODULE_3__.Circle(this.world, { x, y, size, scale });
+        primitive = new _classes_Circle__WEBPACK_IMPORTED_MODULE_3__.Circle(this.world, options);
         break;
       case "bomb":
-        primitive = new _classes_Bomb__WEBPACK_IMPORTED_MODULE_1__.Bomb(this.world, { x, y, size, life, scale });
+        primitive = new _classes_Bomb__WEBPACK_IMPORTED_MODULE_1__.Bomb(this.world, { ...options, life });
         break;
       case "triangle":
-        primitive = new _classes_Triangle__WEBPACK_IMPORTED_MODULE_7__.Triangle(this.world, { x, y, size, scale });
+        primitive = new _classes_Triangle__WEBPACK_IMPORTED_MODULE_7__.Triangle(this.world, options);
         break;
       case "softBody":
-        primitive = new _classes_SoftBody__WEBPACK_IMPORTED_MODULE_5__.SoftBody(this.world, { x, y, size, scale });
+        primitive = new _classes_SoftBody__WEBPACK_IMPORTED_MODULE_5__.SoftBody(this.world, options);
         break;
       case "softBodyMesh":
-        primitive = new _classes_SoftBodyMesh__WEBPACK_IMPORTED_MODULE_6__.SoftBodyMesh(this.world, {
-          x,
-          y,
-          size,
-          scale,
-          renderer: this.renderer
-        });
+        primitive = new _classes_SoftBodyMesh__WEBPACK_IMPORTED_MODULE_6__.SoftBodyMesh(this.world, options);
         break;
     }
 
@@ -63871,6 +63870,7 @@ class Game extends PIXI.Container {
             b &&
             !(b instanceof _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground) &&
             i !== j &&
+            b.options.color === a.options.color &&
             (objGroups[i] === undefined ||
               objGroups[j] === undefined ||
               objGroups[i] !== objGroups[j])
@@ -64085,7 +64085,7 @@ if (module.hot) {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("be0b3caee1b3a05cbb16")
+/******/ 		__webpack_require__.h = () => ("f70a3b67474bff4c4ebb")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
