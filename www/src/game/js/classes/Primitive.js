@@ -55,6 +55,7 @@ export class Primitive {
 
   destroy() {
     this.world.destroyBody(this.body);
+    this.destroyed = true;
   }
 
   checkPoint(x, y) {

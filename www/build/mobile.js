@@ -62971,7 +62971,7 @@ class Box extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     );
     const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
     const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
-    g.lineStyle(1, 0xffffff, 1);
+    g.lineStyle(1, color, 0.5);
     g.beginFill(color, 1);
     g.drawRect(
       (-size / 2) * this.scale,
@@ -63026,7 +63026,7 @@ class Circle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     );
     const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
     const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
-    g.lineStyle(1, 0xffffff, 1);
+    g.lineStyle(1, color, 0.5);
     g.beginFill(color, 1);
     g.drawCircle(0, 0, size * this.scale);
     g.endFill();
@@ -63170,6 +63170,7 @@ class Primitive {
 
   destroy() {
     this.world.destroyBody(this.body);
+    this.destroyed = true;
   }
 
   checkPoint(x, y) {
@@ -63351,7 +63352,7 @@ class SoftBodyMesh extends _Primitive__WEBPACK_IMPORTED_MODULE_3__.Primitive {
 
   createTexture(color) {
     const graphics = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
-    //graphics.lineStyle(5, 0xffffff, 1);
+    graphics.lineStyle(5, color, 0.5);
     graphics.beginFill(color, 1);
     graphics.drawCircle(0, 0, 50);
     graphics.endFill();
@@ -63434,7 +63435,7 @@ class Triangle extends _Primitive__WEBPACK_IMPORTED_MODULE_2__.Primitive {
     const sprite = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Container();
     const g = new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Graphics();
 
-    g.lineStyle(1, 0xffffff, 1);
+    g.lineStyle(1, color, 0.5);
     g.beginFill(color, 1);
     g.drawPolygon([
       new pixi_js__WEBPACK_IMPORTED_MODULE_0__.Point(-1 * size * this.scale, 0 * size * this.scale),
@@ -63508,6 +63509,155 @@ function pxm(p, pscale =  60) {
 function calcScale(ww, wh, sw, sh) {
   return Math.min(sw / ww, sh / wh);
 }
+
+/***/ }),
+
+/***/ "./www/src/game/js/particles/particle.js":
+/*!***********************************************!*\
+  !*** ./www/src/game/js/particles/particle.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+const PIXI = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+
+const WHITE = 0xffffff;
+
+class Particle extends PIXI.Graphics {
+  constructor(size, color) {
+    super();
+
+    this.size = size > 3 ? size : 3;
+    this.color = color;
+    this.startColor = color;
+    this.timeCreation = Date.now();
+    this.hspeed = 0;
+    this.vspeed = 0;
+    this.haccel = 0;
+    this.vaccel = 0;
+    this.fric = 0.95;
+
+    this.draw();
+  }
+
+  draw() {
+    this.drawFilledCircleWithoutBounds(this.size, this.startColor, 1);
+  }
+
+  drawFilledCircleWithoutBounds(radius, color, alpha) {
+    this.lineStyle(0);
+    this.beginFill(color, alpha);
+    this.drawCircle(0, 0, radius);
+    this.endFill();
+  }
+
+  update() {
+    this.alpha -= Math.random() * 0.05;
+    this.hspeed = this.hspeed * this.fric + this.haccel;
+    this.vspeed = this.vspeed * this.fric + this.vaccel;
+    this.x += this.hspeed;
+    this.y += this.vspeed;
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Particle);
+
+
+/***/ }),
+
+/***/ "./www/src/game/js/particles/particles.js":
+/*!************************************************!*\
+  !*** ./www/src/game/js/particles/particles.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _particle__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./particle */ "./www/src/game/js/particles/particle.js");
+const PIXI = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm/pixi.js");
+
+
+
+const MAX = 5000;
+const TIME_LIFE = 15000;
+const SPEED = 5;
+const FRIC = 0.98;
+const MAX_SIZE = 8;
+
+const options = {
+  scale: true,
+  position: true,
+  rotation: false,
+  uvs: false,
+  alpha: true
+};
+
+class Particles extends PIXI.Container {
+  constructor(width, height) {
+    super(MAX, options);
+
+    this.maxWidht = width;
+    this.maxHeight = height;
+  }
+
+  render(delta) {
+    let removing = [];
+
+    for (let particle of this.children) {
+      particle.render(delta);
+      particle.update(delta);
+      if (this.checkParticle(particle)) {
+        removing.push(particle);
+      }
+    }
+
+    for (let i = 0; i < removing.length; i++) {
+      this.removeChild(removing[i]);
+      removing[i].destroy();
+    }
+  }
+
+  checkParticle(particle) {
+    return (
+      Date.now() - particle.timeCreation > TIME_LIFE ||
+      //particle.x < 0 - particle.width ||
+      //particle.y < 0 - particle.height ||
+      //particle.x > this.maxWidht + particle.width ||
+      //particle.y > this.maxHeight + particle.height ||
+      particle.alpha < 0.05
+    );
+  }
+
+  create(x, y, color, count = 50) {
+    console.log(`CreateParticles`, x, y, color, count);
+    for (let i = 0; i < count; i++) {
+      this.createParticle(x, y, color);
+    }
+  }
+
+  createParticle(x, y, color) {
+    let particle = new _particle__WEBPACK_IMPORTED_MODULE_0__.default(Math.random() * MAX_SIZE, color);
+    this.addChild(particle);
+    particle.angle = Math.random() * 2 * Math.PI;
+    particle.speed = SPEED / 2 + (Math.random() * SPEED) / 3;
+    particle.fric = FRIC - (Math.random() * 3) / 100;
+    particle.x = x;
+    particle.y = y;
+    particle.hspeed = particle.speed * Math.cos(particle.angle);
+    particle.vspeed = particle.speed * Math.sin(particle.angle);
+    particle.vaccel = 0.3;
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Particles);
+
 
 /***/ }),
 
@@ -63640,6 +63790,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _classes_SoftBodyMesh__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./classes/SoftBodyMesh */ "./www/src/game/js/classes/SoftBodyMesh.js");
 /* harmony import */ var _classes_Triangle__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./classes/Triangle */ "./www/src/game/js/classes/Triangle.js");
 /* harmony import */ var _const__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./const */ "./www/src/game/js/const.js");
+/* harmony import */ var _particles_particles__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./particles/particles */ "./www/src/game/js/particles/particles.js");
+
 
 
 
@@ -63658,7 +63810,7 @@ const PIXI = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm
 const metersPerPixel = 0.01;
 let scale = 1 / metersPerPixel;
 
-const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
+const PointToVec2 = p => Vec2(p.x / scale, p.y / scale);
 
 const worldWidth = 7;
 const worldHeight = 15;
@@ -63690,9 +63842,11 @@ class Game extends PIXI.Container {
     this.position.set(this.options.width / 2, this.options.height);
 
     this.addBackground();
+
     this.initWorld();
 
     this.on("pointerdown", this.onPointerDown);
+    this.addParticlesContainer();
   }
 
   addBackground() {
@@ -63708,6 +63862,14 @@ class Game extends PIXI.Container {
     g.endFill();
     g.cacheAsBitmap = true;
     this.addChild(g);
+    this.background = g;
+  }
+
+  addParticlesContainer() {
+    this.particles = new _particles_particles__WEBPACK_IMPORTED_MODULE_9__.default(worldWidth, worldHeight);
+    this.particles.x = 0;
+    this.particles.y = 0;
+    this.addChild(this.particles);
   }
 
   onPointerDown(e) {
@@ -63718,26 +63880,32 @@ class Game extends PIXI.Container {
     for (let i in this.objects) {
       const object = this.objects[i];
       if (object && object.checkPoint(pos.x, pos.y)) {
-        this.removePrimitive(object, i);
+        this.removeNearest();
 
-        this.createPrimitive(
-          pos.x,
-          pos.y,
-          object.options.size * 1.5,
-          "bomb",
-          5
-        );
+        if (!object.destroyed) {
+          this.removePrimitive(object, i);
+
+          console.log(object.options);
+
+          this.createPrimitive(
+            pos.x,
+            pos.y,
+            object.options.size * 1.5,
+            "bomb",
+            5,
+            object.options.color
+          );
+        }
 
         return;
       }
     }
 
-    this.createPrimitive(pos.x, pos.y, Math.random() / 2 + 0.6);
-    this.removeNearest();
+    this.createPrimitive(pos.x, pos.y, Math.random() * 0.4 + 0.6);
   }
 
   handleKeyPress() {
-    window.onkeydown = (e) => {
+    window.onkeydown = e => {
       console.log(e.keyCode);
       if (e && e.keyCode > 47) {
         this.createPrimitive(
@@ -63759,17 +63927,20 @@ class Game extends PIXI.Container {
     for (let group of groups) {
       if (group.length > 2) {
         for (let i of group) {
-          let object = this.objects[i],
-            pos = object.getPosition();
-          this.removePrimitive(object, i);
+          let object = this.objects[i];
+          if (object) {
+            let pos = object.getPosition();
+            this.removePrimitive(object, i);
 
-          this.createPrimitive(
-            pos.x,
-            pos.y,
-            object.options.size * 1.5,
-            "bomb",
-            5
-          );
+            this.createPrimitive(
+              pos.x,
+              pos.y,
+              object.getSize() * 1.2,
+              "bomb",
+              5,
+              object.options.color
+            );
+          }
         }
       }
     }
@@ -63798,7 +63969,7 @@ class Game extends PIXI.Container {
     if (removed >= COUNT_OBJECTS_TO_CLEAR) {
       console.log(`!! clear`, objectsCount, removed);
 
-      this.objects = this.objects.filter((o) => !!o);
+      this.objects = this.objects.filter(o => !!o);
     }
   }
 
@@ -63823,10 +63994,10 @@ class Game extends PIXI.Container {
     this.createPrimitive(0, -10, 0.5, "softBodyMesh");
   }
 
-  createPrimitive(x, y, size, type, life) {
+  createPrimitive(x, y, size, type, life, color) {
     let primitive;
     type = type || figures[Math.floor(Math.random() * figures.length)];
-    const color = colors[Math.floor(Math.random() * colors.length)];
+    color = color || colors[Math.floor(Math.random() * colors.length)];
     const options = { x, y, size, scale, color, renderer: this.renderer };
 
     switch (type) {
@@ -63836,13 +64007,13 @@ class Game extends PIXI.Container {
       case "ground":
         primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground(this.world, {
           ...options,
-          type: "horizontal",
+          type: "horizontal"
         });
         break;
       case "ground_ver":
         primitive = new _classes_Ground__WEBPACK_IMPORTED_MODULE_4__.Ground(this.world, {
           ...options,
-          type: "vertical",
+          type: "vertical"
         });
         break;
       case "circle":
@@ -63850,6 +64021,14 @@ class Game extends PIXI.Container {
         break;
       case "bomb":
         primitive = new _classes_Bomb__WEBPACK_IMPORTED_MODULE_1__.Bomb(this.world, { ...options, life });
+
+        this.particles.create(
+          options.x * scale,
+          options.y * scale,
+          color,
+          Math.floor(options.size * 20)
+        );
+
         break;
       case "triangle":
         primitive = new _classes_Triangle__WEBPACK_IMPORTED_MODULE_7__.Triangle(this.world, options);
@@ -63931,7 +64110,7 @@ function checkNearest(a, b) {
 
   return (
     Math.sqrt(Math.pow(aPos.x - bPos.x, 2) + Math.pow(aPos.y - bPos.y, 2)) <
-    aSize + bSize + 0.1
+    aSize + bSize + 0.15
   );
 }
 
@@ -64112,7 +64291,7 @@ app.initialize();
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("f70a3b67474bff4c4ebb")
+/******/ 		__webpack_require__.h = () => ("5d51d70d6d2f266e907f")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

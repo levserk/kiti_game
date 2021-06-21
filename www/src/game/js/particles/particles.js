@@ -4,16 +4,16 @@ import Particle from "./particle";
 
 const MAX = 5000;
 const TIME_LIFE = 15000;
-const SPEED = 10;
+const SPEED = 5;
 const FRIC = 0.98;
-const MAX_SIZE = 5;
+const MAX_SIZE = 8;
 
 const options = {
   scale: true,
   position: true,
   rotation: false,
   uvs: false,
-  alpha: true,
+  alpha: true
 };
 
 class Particles extends PIXI.Container {
@@ -26,9 +26,10 @@ class Particles extends PIXI.Container {
 
   render(delta) {
     let removing = [];
+
     for (let particle of this.children) {
       particle.render(delta);
-      particle.alpha -= Math.random() * 0.05;
+      particle.update(delta);
       if (this.checkParticle(particle)) {
         removing.push(particle);
       }
@@ -51,17 +52,16 @@ class Particles extends PIXI.Container {
     );
   }
 
-  create(x, y, color) {
-    for (let i = 0; i < 50; i++) {
+  create(x, y, color, count = 50) {
+    console.log(`CreateParticles`, x, y, color, count);
+    for (let i = 0; i < count; i++) {
       this.createParticle(x, y, color);
     }
   }
 
   createParticle(x, y, color) {
-    console.log(x, y, color)  
-    let particle = new Particle(Math.random() * MAX_SIZE * 100, color);
+    let particle = new Particle(Math.random() * MAX_SIZE, color);
     this.addChild(particle);
-    particle.startColor = 0xffffff;
     particle.angle = Math.random() * 2 * Math.PI;
     particle.speed = SPEED / 2 + (Math.random() * SPEED) / 3;
     particle.fric = FRIC - (Math.random() * 3) / 100;
@@ -69,7 +69,7 @@ class Particles extends PIXI.Container {
     particle.y = y;
     particle.hspeed = particle.speed * Math.cos(particle.angle);
     particle.vspeed = particle.speed * Math.sin(particle.angle);
-    particle.vaccel = 0.2;
+    particle.vaccel = 0.3;
   }
 }
 

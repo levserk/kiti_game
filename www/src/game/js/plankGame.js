@@ -8,7 +8,6 @@ import { SoftBody } from "./classes/SoftBody";
 import { SoftBodyMesh } from "./classes/SoftBodyMesh";
 import { Triangle } from "./classes/Triangle";
 import { calcScale, defaultOptions } from "./const";
-
 import Particles from "./particles/particles";
 
 const { Vec2, World } = planck;
@@ -18,7 +17,7 @@ const PIXI = require("pixi.js");
 const metersPerPixel = 0.01;
 let scale = 1 / metersPerPixel;
 
-const PointToVec2 = (p) => Vec2(p.x / scale, p.y / scale);
+const PointToVec2 = p => Vec2(p.x / scale, p.y / scale);
 
 const worldWidth = 7;
 const worldHeight = 15;
@@ -75,8 +74,8 @@ export default class Game extends PIXI.Container {
 
   addParticlesContainer() {
     this.particles = new Particles(worldWidth, worldHeight);
-    this.particles.x = 0; (this.worldWidth / 2) * scale;
-    this.particles.y = 0; (this.worldHeight / 2) * scale;
+    this.particles.x = 0;
+    this.particles.y = 0;
     this.addChild(this.particles);
   }
 
@@ -85,22 +84,25 @@ export default class Game extends PIXI.Container {
     console.log(point, PointToVec2(point));
     const pos = PointToVec2(point);
 
-    this.removeNearest();
-
-    this.particles.createParticle(point.x, point.y, 0x000000);
-
     for (let i in this.objects) {
       const object = this.objects[i];
       if (object && object.checkPoint(pos.x, pos.y)) {
-        this.removePrimitive(object, i);
+        this.removeNearest();
 
-        this.createPrimitive(
-          pos.x,
-          pos.y,
-          object.options.size * 1.5,
-          "bomb",
-          5
-        );
+        if (!object.destroyed) {
+          this.removePrimitive(object, i);
+
+          console.log(object.options);
+
+          this.createPrimitive(
+            pos.x,
+            pos.y,
+            object.options.size * 1.5,
+            "bomb",
+            5,
+            object.options.color
+          );
+        }
 
         return;
       }
@@ -110,7 +112,7 @@ export default class Game extends PIXI.Container {
   }
 
   handleKeyPress() {
-    window.onkeydown = (e) => {
+    window.onkeydown = e => {
       console.log(e.keyCode);
       if (e && e.keyCode > 47) {
         this.createPrimitive(
@@ -153,7 +155,6 @@ export default class Game extends PIXI.Container {
 
   update(delta) {
     this.world.step(1 / 60);
-    //this.particles.render();
 
     let removed = 0,
       primitive,
@@ -175,7 +176,7 @@ export default class Game extends PIXI.Container {
     if (removed >= COUNT_OBJECTS_TO_CLEAR) {
       console.log(`!! clear`, objectsCount, removed);
 
-      this.objects = this.objects.filter((o) => !!o);
+      this.objects = this.objects.filter(o => !!o);
     }
   }
 
@@ -203,7 +204,7 @@ export default class Game extends PIXI.Container {
   createPrimitive(x, y, size, type, life, color) {
     let primitive;
     type = type || figures[Math.floor(Math.random() * figures.length)];
-    color = colors[Math.floor(Math.random() * colors.length)];
+    color = color || colors[Math.floor(Math.random() * colors.length)];
     const options = { x, y, size, scale, color, renderer: this.renderer };
 
     switch (type) {
@@ -213,13 +214,13 @@ export default class Game extends PIXI.Container {
       case "ground":
         primitive = new Ground(this.world, {
           ...options,
-          type: "horizontal",
+          type: "horizontal"
         });
         break;
       case "ground_ver":
         primitive = new Ground(this.world, {
           ...options,
-          type: "vertical",
+          type: "vertical"
         });
         break;
       case "circle":
@@ -227,13 +228,14 @@ export default class Game extends PIXI.Container {
         break;
       case "bomb":
         primitive = new Bomb(this.world, { ...options, life });
-        for (let i = 0; i < 20; i++) {
-          this.particles.createParticle(
-            options.x * scale,
-            options.y * scale,
-            options.color
-          );
-        }
+
+        this.particles.create(
+          options.x * scale,
+          options.y * scale,
+          color,
+          Math.floor(options.size * 20)
+        );
+
         break;
       case "triangle":
         primitive = new Triangle(this.world, options);
