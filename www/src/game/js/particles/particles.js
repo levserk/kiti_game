@@ -4,9 +4,9 @@ import Particle from "./particle";
 
 const MAX = 5000;
 const TIME_LIFE = 15000;
-const SPEED = 5;
+const SPEED = 7;
 const FRIC = 0.98;
-const MAX_SIZE = 8;
+const MAX_SIZE = 5;
 
 const options = {
   scale: true,

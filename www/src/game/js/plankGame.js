@@ -233,7 +233,7 @@ export default class Game extends PIXI.Container {
           options.x * scale,
           options.y * scale,
           color,
-          Math.floor(options.size * 20)
+          Math.floor(options.size * 25)
         );
 
         break;

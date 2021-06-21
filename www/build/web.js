@@ -63569,9 +63569,9 @@ const PIXI = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/esm
 
 const MAX = 5000;
 const TIME_LIFE = 15000;
-const SPEED = 5;
+const SPEED = 7;
 const FRIC = 0.98;
-const MAX_SIZE = 8;
+const MAX_SIZE = 5;
 
 const options = {
   scale: true,
@@ -64008,7 +64008,7 @@ class Game extends PIXI.Container {
           options.x * scale,
           options.y * scale,
           color,
-          Math.floor(options.size * 20)
+          Math.floor(options.size * 25)
         );
 
         break;
@@ -64264,7 +64264,7 @@ if (module.hot) {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("5d51d70d6d2f266e907f")
+/******/ 		__webpack_require__.h = () => ("fc86995793b389855a44")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
